@@ -12,3 +12,6 @@ experiments/
 data/
 *.pt
 *.pth
+
+# Notes
+notebooks/OUTransformer.ipynb
