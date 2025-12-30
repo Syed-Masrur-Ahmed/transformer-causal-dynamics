@@ -1,0 +1,14 @@
+# Python junk
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Jupyter junk
+.ipynb_checkpoints/
+
+# Research outputs
+experiments/
+data/
+*.pt
+*.pth
