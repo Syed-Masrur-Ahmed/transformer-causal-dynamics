@@ -1,6 +1,6 @@
-# OU Process Transformer Research
+# Transformer Research
 
-**Objective:** Investigate how transformer-based AI models learn to represent and generalize causal structures, specifically using Ornstein-Uhlenbeck processes.
+**Objective:** Investigate how transformer-based AI models learn to represent and generalize causal structures.
 
 ## Architecture
 - 2-Layer Transformer (No MLP)
