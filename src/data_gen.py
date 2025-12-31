@@ -17,15 +17,6 @@ def generate_ou_process(batch_size, time_steps, theta=0.15, mu=0.0, sigma=0.2, d
 def create_windowed_dataset(data, input_len=100, output_len=50, stride=1):
     """
     Slices raw trajectories into (Input, Target) pairs for the Transformer.
-    
-    Args:
-        data: Tensor of shape (Batch, Time_Steps, 1)
-        input_len: Number of past time steps to feed (e.g., 100)
-        output_len: Number of future steps to predict (e.g., 50)
-        stride: How many steps to slide the window (1 = max data, higher = less overlap)
-    
-    Returns:
-        X, Y tensors ready for training
     """
     inputs = []
     targets = []
