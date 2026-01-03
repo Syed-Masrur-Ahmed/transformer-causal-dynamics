@@ -3,28 +3,18 @@ import torch.nn as nn
 import math
 
 class SimpleTransformer(nn.Module):
-    def __init__(self, d_input=1, d_model=64, n_head=1, n_layers=1, output_len=50):
+    def __init__(self, d_input, d_model, n_head, n_layers, output_len, max_len=5000):
         super().__init__()
         self.output_len = output_len
-        
-        # 1. Linear Projection (Replaces Embedding)
         self.input_projection = nn.Linear(d_input, d_model)
-        
-        # 2. Positional Encoding
         self.pos_encoder = PositionalEncoding(d_model)
-        
-        # 3. Stack of "Stripped" Blocks
         self.layers = nn.ModuleList([
             AttentionBlock(d_model, n_head) for _ in range(n_layers)
         ])
-        
-        # 4. Output Head (Projects back to scalar)
         self.output_projection = nn.Linear(d_model, 1)
 
     def forward(self, src):
         # src: (Batch, 100, 1)
-        
-        # Project & Encode
         x = self.input_projection(src) # -> (Batch, 100, 64)
         x = self.pos_encoder(x)
         

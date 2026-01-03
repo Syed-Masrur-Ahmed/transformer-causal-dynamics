@@ -1,0 +1,11 @@
+hyperparameters:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 10
+  
+system:
+  device: "cpu"
+  
+paths:
+  save_dir: "experiments"
+  model_save_name: "model_v1.pth"

@@ -1,8 +1,18 @@
 import torch
 import numpy as np
+import os
+import sys
 from torch.utils.data import TensorDataset, DataLoader
 
-def generate_ou_process(batch_size, time_steps, theta=0.15, mu=0.0, sigma=0.2, dt=0.1):
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from src.utils import load_full_config
+
+def generate_ou_process(batch_size, time_steps, theta, mu, sigma, dt):
+    """
+    Simulates Ornstein-Uhlenbeck processes.
+    dX_t = theta * (mu - X_t) * dt + sigma * dW_t
+    """
     X = torch.zeros(batch_size, time_steps, 1)
     X[:, 0, :] = mu 
     
@@ -14,7 +24,7 @@ def generate_ou_process(batch_size, time_steps, theta=0.15, mu=0.0, sigma=0.2, d
         
     return X
 
-def create_windowed_dataset(data, input_len=100, output_len=50, stride=1):
+def create_windowed_dataset(data, input_len, output_len, stride):
     """
     Slices raw trajectories into (Input, Target) pairs for the Transformer.
     """
@@ -42,7 +52,7 @@ def create_windowed_dataset(data, input_len=100, output_len=50, stride=1):
             
     return torch.stack(inputs), torch.stack(targets)
 
-def prepare_dataloaders(X, Y, batch_size=64, train_split=0.8):
+def prepare_dataloaders(X, Y, batch_size, train_split):
     """
     Wraps tensors into PyTorch DataLoaders.
     """
@@ -58,14 +68,36 @@ def prepare_dataloaders(X, Y, batch_size=64, train_split=0.8):
     return train_loader, val_loader
 
 if __name__ == "__main__":
-    # 1. Generate Raw Data
-    print("Generating OU Process...")
-    raw_data = generate_ou_process(batch_size=1000, time_steps=200)
+    print("Loading configuration...")
+    cfg = load_full_config()
     
-    # 2. Chop into Windows (100 -> 50)
-    print("Slicing into windows...")
-    X, Y = create_windowed_dataset(raw_data, input_len=100, output_len=50)
+    # Unpack config sections for readability
+    phys_cfg = cfg['physics']
+    gen_cfg = cfg['generation']
+    win_cfg = cfg['windowing']
+    path_cfg = cfg['paths']
+
+    print(f"Generating OU Process (Batch: {gen_cfg['batch_size']}, Steps: {gen_cfg['total_time_steps']})...")
+    raw_data = generate_ou_process(
+        batch_size=gen_cfg['batch_size'],
+        time_steps=gen_cfg['total_time_steps'],
+        theta=phys_cfg['theta'],
+        mu=phys_cfg['mu'],
+        sigma=phys_cfg['sigma'],
+        dt=phys_cfg['dt']
+    )
     
-    # 3. Save to disk (So you don't re-generate every time you train)
-    print(f"Saving dataset: X shape {X.shape}, Y shape {Y.shape}")
-    torch.save({'X': X, 'Y': Y}, 'data/ou_dataset.pt')
+    print(f"Slicing into windows (Input: {win_cfg['input_len']} -> Output: {win_cfg['output_len']})...")
+    X, Y = create_windowed_dataset(
+        raw_data, 
+        input_len=win_cfg['input_len'], 
+        output_len=win_cfg['output_len'],
+        stride=win_cfg['stride']
+    )
+    
+    save_dir = os.path.dirname(path_cfg['save_path'])
+    if save_dir:
+        os.makedirs(save_dir, exist_ok=True)
+        
+    print(f"Saving dataset to {path_cfg['save_path']}: X shape {X.shape}, Y shape {Y.shape}")
+    torch.save({'X': X, 'Y': Y}, path_cfg['save_path'])

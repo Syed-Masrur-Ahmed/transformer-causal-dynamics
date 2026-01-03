@@ -1,0 +1,21 @@
+physics:
+  theta: 0.15
+  mu: 0.0
+  sigma: 0.2 
+  dt: 0.1    
+
+generation:
+  batch_size: 1000
+  total_time_steps: 200
+
+windowing:
+  input_len: 100
+  output_len: 50
+  stride: 1
+
+training:
+  train_split: 0.8
+  batch_size: 64
+
+paths:
+  save_path: "data/ou_dataset.pt"
