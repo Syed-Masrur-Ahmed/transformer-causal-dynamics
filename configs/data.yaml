@@ -6,7 +6,7 @@ physics:
 
 generation:
   batch_size: 1000
-  total_time_steps: 200
+  total_time_steps: 1000
 
 windowing:
   input_len: 100

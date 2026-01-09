@@ -3,9 +3,8 @@ import torch.nn as nn
 import math
 
 class SimpleTransformer(nn.Module):
-    def __init__(self, d_input, d_model, n_head, n_layers, output_len, max_len=5000):
+    def __init__(self, d_input, d_model, n_head, n_layers, max_len=5000):
         super().__init__()
-        self.output_len = output_len
         self.input_projection = nn.Linear(d_input, d_model)
         self.pos_encoder = PositionalEncoding(d_model)
         self.layers = nn.ModuleList([
