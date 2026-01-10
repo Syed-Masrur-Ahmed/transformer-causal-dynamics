@@ -6,11 +6,11 @@ physics:
 
 generation:
   batch_size: 1000
-  total_time_steps: 1000
+  total_time_steps: 100
 
 windowing:
-  input_len: 100
-  output_len: 50
+  input_len: 20
+  output_len: 10
   stride: 1
 
 training:

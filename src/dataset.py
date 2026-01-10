@@ -4,17 +4,20 @@ from torch.utils.data import TensorDataset, DataLoader, random_split
 
 def generate_ou_process(batch_size, time_steps, theta, mu, sigma, dt):
     """
-    Simulates Ornstein-Uhlenbeck processes.
+    Simulates Ornstein-Uhlenbeck processes using the exact solution.
     """
     X = torch.zeros(batch_size, time_steps, 1)
-    X[:, 0, :] = mu 
-    
+    X[:, 0, :] = mu
+
+    # Pre-calculate constants for efficiency
+    exp_theta_dt = np.exp(-theta * dt)
+    sqrt_term = sigma * np.sqrt((1 - np.exp(-2 * theta * dt)) / (2 * theta))
+
     for t in range(1, time_steps):
         x_prev = X[:, t-1, :]
-        dW = torch.randn_like(x_prev) * np.sqrt(dt)
-        drift = theta * (mu - x_prev) * dt
-        X[:, t, :] = x_prev + drift + sigma * dW
-        
+        dW_exact = torch.randn_like(x_prev)
+        X[:, t, :] = x_prev * exp_theta_dt + mu * (1 - exp_theta_dt) + sqrt_term * dW_exact
+
     return X
 
 def create_windowed_dataset(data, input_len, output_len, stride):
