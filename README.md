@@ -24,16 +24,25 @@ Dependencies: `torch`, `numpy`, `pyyaml`, `matplotlib`, `seaborn`, `jupyter`, `t
    ```bash
    python scripts/data_gen.py
    ```
-   Reads `configs/data.yaml` and saves to `data/ou_dataset.pt`
+   Generates two datasets:
+   - Next token prediction: `data/ou_next_token.pt`
+   - Mean prediction: `data/ou_mean_pred.pt` (trajectories with random means)
 
 2. **Train model:**
    ```bash
    python scripts/train.py
    ```
-   Uses all configs (merged via `src.utils.load_full_config()`) and saves to `experiments/`
+   Select training mode:
+   - `1` for next token prediction
+   - `2` for mean prediction
+   
+   Models saved to `experiments/`
 
 3. **Analyze:**
-   Open `notebooks/02_analysis.ipynb` for visualizations and attention maps
+   - `notebooks/01_data_viz.ipynb` - Sample data visualization
+   - `notebooks/02_analysis.ipynb` - Attention maps and extrapolation
+   - `notebooks/03_regression_plot.ipynb` - X_t vs X_{t+1} regression
+   - `notebooks/04_mean_prediction.ipynb` - Mean prediction scatter plot
 
 ---
 
@@ -50,7 +59,7 @@ Dependencies: `torch`, `numpy`, `pyyaml`, `matplotlib`, `seaborn`, `jupyter`, `t
 
 ## Configs
 
-- `data.yaml` - Physics params (θ, σ, μ, dt) and data generation settings
+- `data.yaml` - Physics params (θ, σ, μ, dt), data generation, and multi-mean settings
 - `model.yaml` - Transformer architecture (d_model, n_heads, n_layers)
 - `train.yaml` - Training hyperparameters (lr, epochs, batch size)
 
