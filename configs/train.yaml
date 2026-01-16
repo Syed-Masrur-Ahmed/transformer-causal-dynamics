@@ -1,11 +1,12 @@
 hyperparameters:
   batch_size: 64
   learning_rate: 0.001
-  epochs: 5
+  epochs: 20
   
 system:
   device: "cpu"
   
 paths:
   save_dir: "experiments"
-  model_save_name: "model_v1.pth"
+  next_token_model_name: "model_next_token.pth"
+  mean_pred_model_name: "model_mean_pred.pth"

@@ -8,7 +8,7 @@ class SimpleTransformer(nn.Module):
         self.input_projection = nn.Linear(d_input, d_model)
         self.pos_encoder = PositionalEncoding(d_model)
         self.layers = nn.ModuleList([
-            AttentionBlock(d_model, n_head) for _ in range(n_layers)
+            AttentionBlock(d_model, n_head, d_model*4) for _ in range(n_layers)
         ])
         self.output_projection = nn.Linear(d_model, 1)
 
@@ -28,10 +28,20 @@ class SimpleTransformer(nn.Module):
         return predictions, attention_maps
 
 class AttentionBlock(nn.Module):
-    def __init__(self, d_model, n_head):
+    def __init__(self, d_model, n_head, dim_feedforward):
         super().__init__()
         self.attn = nn.MultiheadAttention(d_model, n_head, batch_first=True)
         self.norm1 = nn.LayerNorm(d_model)
+        
+        if dim_feedforward is None:
+            dim_feedforward = 4 * d_model
+            
+        self.ffn = nn.Sequential(
+            nn.Linear(d_model, dim_feedforward),
+            nn.ReLU(),
+            nn.Linear(dim_feedforward, d_model)
+        )
+        self.norm2 = nn.LayerNorm(d_model)
 
     def forward(self, x):
         # Causal Mask
@@ -44,6 +54,10 @@ class AttentionBlock(nn.Module):
         
         # Residual + Norm
         x = self.norm1(x + attn_out)
+        
+        # Feed-forward
+        ffn_out = self.ffn(x)
+        x = self.norm2(x + ffn_out)
         
         return x, attn_weights
 
