@@ -5,3 +5,4 @@ jupyter
 tqdm
 pyyaml
 seaborn
+scikit-learn

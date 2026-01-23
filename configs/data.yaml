@@ -20,8 +20,15 @@ training:
 paths:
   next_token_data_path: "data/ou_next_token.pt"
   mean_pred_data_path: "data/ou_mean_pred.pt"
+  multi_theta_data_path: "data/ou_multi_theta.pt"
 
 multi_mean:
   num_trajectories: 10000
+  mean_min: -1.5
+  mean_max: 1.5
+
+multi_theta:
+  num_trajectories: 10000
+  gamma: 5.0
   mean_min: -1.5
   mean_max: 1.5

@@ -9,6 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.model import SimpleTransformer
 from src.utils import load_full_config
+from src.dataset import SequenceDataset
 
 def train_next_token(cfg):
     train_cfg = cfg['hyperparameters']
@@ -57,9 +58,9 @@ def train_mean_prediction(cfg):
     
     mean_pred_data_path = path_cfg.get('mean_pred_data_path', 'data/ou_mean_pred.pt')
     print(f"Loading data from {mean_pred_data_path}...")
-    checkpoint = torch.load(mean_pred_data_path)
-    trajectories = checkpoint['trajectories']
-    means = checkpoint['means'].float().unsqueeze(1)
+    seq_dataset = SequenceDataset.load(mean_pred_data_path)
+    trajectories = seq_dataset.sequences
+    means = seq_dataset.means.float().unsqueeze(1)
     
     dataset = TensorDataset(trajectories, means)
     loader = DataLoader(dataset, batch_size=train_cfg['batch_size'], shuffle=True)
@@ -91,12 +92,53 @@ def train_mean_prediction(cfg):
     torch.save(model.state_dict(), mean_pred_model_path)
     print(f"Model saved to {mean_pred_model_path}")
 
+def train_multi_theta_mean(cfg):
+    train_cfg = cfg['hyperparameters']
+    path_cfg = cfg['paths']
+    
+    multi_theta_data_path = path_cfg.get('multi_theta_data_path', 'data/ou_multi_theta.pt')
+    print(f"Loading data from {multi_theta_data_path}...")
+    seq_dataset = SequenceDataset.load(multi_theta_data_path)
+    trajectories = seq_dataset.sequences
+    means = seq_dataset.means.float().unsqueeze(1)
+    
+    dataset = TensorDataset(trajectories, means)
+    loader = DataLoader(dataset, batch_size=train_cfg['batch_size'], shuffle=True)
+    
+    device = torch.device("cuda" if torch.cuda.is_available() and cfg['system']['device'] == "cuda" else "cpu")
+    print(f"Using device: {device}")
+    model = SimpleTransformer(**cfg['architecture'])
+    model.to(device)
+    
+    optimizer = optim.Adam(model.parameters(), lr=train_cfg['learning_rate'])
+    criterion = nn.MSELoss()
+    
+    print("Starting training (multi-theta mean prediction)...")
+    for epoch in range(train_cfg['epochs']):
+        total_loss = 0
+        for batch_X, batch_Y in loader:
+            batch_X, batch_Y = batch_X.to(device), batch_Y.to(device)
+            optimizer.zero_grad()
+            preds, _ = model(batch_X)
+            pred_mean = preds[:, -1, :]
+            loss = criterion(pred_mean, batch_Y)
+            loss.backward()
+            optimizer.step()
+            total_loss += loss.item()
+        print(f"Epoch {epoch+1}: Loss = {total_loss / len(loader):.6f}")
+        
+    os.makedirs(path_cfg['save_dir'], exist_ok=True)
+    multi_theta_model_path = os.path.join(path_cfg['save_dir'], path_cfg.get('multi_theta_model_name', 'model_multi_theta.pth'))
+    torch.save(model.state_dict(), multi_theta_model_path)
+    print(f"Model saved to {multi_theta_model_path}")
+
 if __name__ == "__main__":
     print("Select training mode:")
     print("  1. Next token prediction")
-    print("  2. Mean prediction")
+    print("  2. Mean prediction (fixed theta)")
+    print("  3. Mean prediction (multi-theta)")
     
-    choice = input("Enter choice (1 or 2): ").strip()
+    choice = input("Enter choice (1, 2, or 3): ").strip()
     
     cfg = load_full_config()
     
@@ -104,5 +146,7 @@ if __name__ == "__main__":
         train_next_token(cfg)
     elif choice == '2':
         train_mean_prediction(cfg)
+    elif choice == '3':
+        train_multi_theta_mean(cfg)
     else:
-        print("Invalid choice. Please enter 1 or 2.")
+        print("Invalid choice. Please enter 1, 2, or 3.")

@@ -1,6 +1,83 @@
 import torch
 import numpy as np
+from dataclasses import dataclass, asdict, field
+from typing import Optional, Dict, Any
 from torch.utils.data import TensorDataset, DataLoader, random_split
+
+
+@dataclass
+class StochasticSequence:
+    data: torch.Tensor
+    mean: float
+    variance: float
+    sequence_type: str
+    theta: Optional[float] = None
+    dt: Optional[float] = None
+    timestamps: Optional[torch.Tensor] = None
+    
+    def save(self, path: str):
+        save_dict = {
+            'data': self.data,
+            'mean': self.mean,
+            'variance': self.variance,
+            'sequence_type': self.sequence_type,
+            'theta': self.theta,
+            'dt': self.dt,
+            'timestamps': self.timestamps
+        }
+        torch.save(save_dict, path)
+    
+    @classmethod
+    def load(cls, path: str) -> 'StochasticSequence':
+        d = torch.load(path)
+        return cls(**d)
+    
+    @property
+    def stationary_variance(self) -> float:
+        if self.sequence_type == "ou_process" and self.theta:
+            return self.variance / (2 * self.theta)
+        return self.variance
+
+
+@dataclass
+class SequenceDataset:
+    sequences: torch.Tensor
+    means: torch.Tensor
+    sequence_type: str
+    physics_params: Dict[str, Any] = field(default_factory=dict)
+    timestamps: Optional[torch.Tensor] = None
+    thetas: Optional[torch.Tensor] = None
+    
+    def __len__(self) -> int:
+        return self.sequences.shape[0]
+    
+    def __getitem__(self, idx: int) -> StochasticSequence:
+        theta_val = float(self.thetas[idx]) if self.thetas is not None else self.physics_params.get('theta')
+        return StochasticSequence(
+            data=self.sequences[idx],
+            mean=float(self.means[idx]),
+            variance=self.physics_params.get('sigma', 0.0) ** 2,
+            sequence_type=self.sequence_type,
+            theta=theta_val,
+            dt=self.physics_params.get('dt'),
+            timestamps=self.timestamps
+        )
+    
+    def save(self, path: str):
+        save_dict = {
+            'sequences': self.sequences,
+            'means': self.means,
+            'sequence_type': self.sequence_type,
+            'physics_params': self.physics_params,
+            'timestamps': self.timestamps,
+            'thetas': self.thetas
+        }
+        torch.save(save_dict, path)
+    
+    @classmethod
+    def load(cls, path: str) -> 'SequenceDataset':
+        d = torch.load(path)
+        return cls(**d)
 
 def generate_ou_process(batch_size, time_steps, theta, mu, sigma, dt):
     """
