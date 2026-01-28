@@ -3,28 +3,23 @@ import torch.nn as nn
 import math
 
 class SimpleTransformer(nn.Module):
-    def __init__(self, d_input, d_model, n_head, n_layers, max_len=5000):
+    def __init__(self, d_input, d_model, n_head, n_layers, max_len=5000, d_output=2):
         super().__init__()
         self.input_projection = nn.Linear(d_input, d_model)
         self.pos_encoder = PositionalEncoding(d_model)
         self.layers = nn.ModuleList([
             AttentionBlock(d_model, n_head, d_model*4) for _ in range(n_layers)
         ])
-        self.output_projection = nn.Linear(d_model, 1)
+        self.output_projection = nn.Linear(d_model, d_output)
 
     def forward(self, src):
-        # src: (Batch, 100, 1)
-        x = self.input_projection(src) # -> (Batch, 100, 64)
+        x = self.input_projection(src)
         x = self.pos_encoder(x)
-        
-        # Apply Transformer Blocks
         attention_maps = []
         for layer in self.layers:
             x, attn = layer(x)
             attention_maps.append(attn)
-            
-        predictions = self.output_projection(x) # -> (Batch, 100, 1)
-        
+        predictions = self.output_projection(x)
         return predictions, attention_maps
 
 class AttentionBlock(nn.Module):

@@ -1,7 +1,7 @@
 hyperparameters:
   batch_size: 64
-  learning_rate: 0.001
-  epochs: 5
+  learning_rate: 0.0003
+  epochs: 3
   
 system:
   device: "cpu"

@@ -1,6 +1,7 @@
 architecture:
   d_input: 1
-  d_model: 4
-  n_head: 1
+  d_model: 8
+  n_head: 2
   n_layers: 1
-  max_len: 5000        # For Positional Encoding
+  max_len: 5000
+  d_output: 2

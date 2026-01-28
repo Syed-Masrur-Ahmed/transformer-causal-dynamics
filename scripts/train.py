@@ -21,9 +21,9 @@ def train_next_token(cfg):
     full_X = checkpoint['X']
     
     X_train = full_X[:, :-1, :]
-    Y_train = full_X[:, 1:, :]
+    Y = full_X[:, 1:, :]
     
-    dataset = TensorDataset(X_train, Y_train)
+    dataset = TensorDataset(X_train, Y)
     loader = DataLoader(dataset, batch_size=train_cfg['batch_size'], shuffle=True)
     
     device = torch.device("cuda" if torch.cuda.is_available() and cfg['system']['device'] == "cuda" else "cpu")
@@ -34,14 +34,18 @@ def train_next_token(cfg):
     optimizer = optim.Adam(model.parameters(), lr=train_cfg['learning_rate'])
     criterion = nn.MSELoss()
     
-    print("Starting training (next token prediction)...")
+    print("Starting training (next-token, dual loss: E[X] + E[X^2])...")
     for epoch in range(train_cfg['epochs']):
         total_loss = 0
         for batch_X, batch_Y in loader:
             batch_X, batch_Y = batch_X.to(device), batch_Y.to(device)
             optimizer.zero_grad()
             preds, _ = model(batch_X)
-            loss = criterion(preds, batch_Y)
+            pred_mean = preds[:, :, 0:1]
+            pred_second_moment = preds[:, :, 1:2]
+            loss_1 = criterion(pred_mean, batch_Y)
+            loss_2 = criterion(pred_second_moment, batch_Y ** 2)
+            loss = loss_1 + 0.1 * loss_2  # Weight second moment less (it's much larger)
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
@@ -80,7 +84,7 @@ def train_mean_prediction(cfg):
             batch_X, batch_Y = batch_X.to(device), batch_Y.to(device)
             optimizer.zero_grad()
             preds, _ = model(batch_X)
-            pred_mean = preds[:, -1, :]
+            pred_mean = preds[:, -1, 0:1]
             loss = criterion(pred_mean, batch_Y)
             loss.backward()
             optimizer.step()
@@ -120,7 +124,7 @@ def train_multi_theta_mean(cfg):
             batch_X, batch_Y = batch_X.to(device), batch_Y.to(device)
             optimizer.zero_grad()
             preds, _ = model(batch_X)
-            pred_mean = preds[:, -1, :]
+            pred_mean = preds[:, -1, 0:1]
             loss = criterion(pred_mean, batch_Y)
             loss.backward()
             optimizer.step()
