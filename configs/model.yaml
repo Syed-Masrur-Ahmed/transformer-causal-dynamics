@@ -1,7 +1,7 @@
 architecture:
   d_input: 1
-  d_model: 8
-  n_head: 2
-  n_layers: 1
+  d_model: 64
+  n_head: 4
+  n_layers: 2
   max_len: 5000
-  d_output: 2
+  d_output: 50  # Number of s values (set from data.yaml mgf.num_points)

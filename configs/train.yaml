@@ -1,7 +1,7 @@
 hyperparameters:
   batch_size: 64
-  learning_rate: 0.0003
-  epochs: 3
+  learning_rate: 0.001
+  epochs: 5
   
 system:
   device: "cpu"
@@ -9,5 +9,4 @@ system:
 paths:
   save_dir: "experiments"
   next_token_model_name: "model_next_token.pth"
-  mean_pred_model_name: "model_mean_pred.pth"
   multi_theta_model_name: "model_multi_theta.pth"
