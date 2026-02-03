@@ -1,8 +1,10 @@
 # Transformer Causal Dynamics
 
-Exploring whether transformers can learn the dynamics of Ornstein-Uhlenbeck processes. The goal is to see if attention mechanisms can capture mean-reversion (θ) and volatility (σ) from time series data.
+Training transformers to learn Ornstein-Uhlenbeck process dynamics by predicting the log moment-generating function (MGF).
 
 **OU Process:** `dX_t = θ(μ - X_t)dt + σdW_t`
+
+The transformer predicts `φ(s | X_L, θ) = s·E[X_{t+1}|X_t] + 0.5·s²·Var[X_{t+1}|X_t]` for multiple s values. Mean and variance are extracted via parabolic fitting.
 
 ---
 
@@ -14,53 +16,54 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Dependencies: `torch`, `numpy`, `pyyaml`, `matplotlib`, `seaborn`, `jupyter`, `tqdm`
-
 ---
 
 ## Quick Start
 
 1. **Generate data:**
    ```bash
-   python scripts/data_gen.py
+   python scripts/data_gen.py  # Select option 2 for MGF
    ```
-   Generates two datasets:
-   - Next token prediction: `data/ou_next_token.pt`
-   - Mean prediction: `data/ou_mean_pred.pt` (trajectories with random means)
 
-2. **Train model:**
+2. **Train:**
    ```bash
-   python scripts/train.py
+   python scripts/train.py  # Select option 2 for MGF
    ```
-   Select training mode:
-   - `1` for next token prediction
-   - `2` for mean prediction
-   
-   Models saved to `experiments/`
 
 3. **Analyze:**
-   - `notebooks/01_data_viz.ipynb` - Sample data visualization
-   - `notebooks/02_analysis.ipynb` - Attention maps and extrapolation
-   - `notebooks/03_regression_plot.ipynb` - X_t vs X_{t+1} regression
-   - `notebooks/04_mean_prediction.ipynb` - Mean prediction scatter plot
+   ```bash
+   jupyter notebook notebooks/06_mgf_prediction.ipynb
+   ```
+
+### Other Options
+
+- Option 1: Next token prediction
+- Option 3: Mean prediction
+
+### Notebooks
+
+- `01_data_viz.ipynb` - Data visualization
+- `02_analysis.ipynb` - Attention maps
+- `03_regression_plot.ipynb` - Regression analysis
+- `04_mean_prediction.ipynb` - Mean prediction
+- `06_mgf_prediction.ipynb` - MGF prediction and moment extraction
 
 ---
 
 ## Structure
 
-- `configs/` - YAML configs for data generation, model architecture, and training
-- `scripts/` - Data generation and training scripts
-- `src/` - Model definitions and utilities
-- `notebooks/` - Analysis and visualization
-- `data/` - Generated datasets
-- `experiments/` - Model checkpoints
+```
+configs/          # YAML configuration files
+scripts/          # Data generation and training
+src/              # Model and dataset code
+notebooks/        # Analysis notebooks
+data/             # Generated datasets
+experiments/      # Model checkpoints
+```
 
----
+## Configuration
 
-## Configs
-
-- `data.yaml` - Physics params (θ, σ, μ, dt), data generation, and multi-mean settings
-- `model.yaml` - Transformer architecture (d_model, n_heads, n_layers)
-- `train.yaml` - Training hyperparameters (lr, epochs, batch size)
-
-Just edit the YAML files to change parameters. The scripts will pick them up automatically.
+Edit YAML files in `configs/`:
+- `data.yaml` - Physics parameters, MGF settings
+- `model.yaml` - Transformer architecture
+- `train.yaml` - Training hyperparameters
