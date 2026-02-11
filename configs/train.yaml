@@ -1,12 +1,11 @@
 hyperparameters:
   batch_size: 64
   learning_rate: 0.001
-  epochs: 5
+  epochs: 2000
   
 system:
   device: "cpu"
   
 paths:
   save_dir: "experiments"
-  next_token_model_name: "model_next_token.pth"
-  multi_theta_model_name: "model_multi_theta.pth"
+  mgf_model_name: "model_mgf.pth"

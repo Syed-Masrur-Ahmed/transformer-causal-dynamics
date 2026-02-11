@@ -22,12 +22,12 @@ pip install -r requirements.txt
 
 1. **Generate data:**
    ```bash
-   python scripts/data_gen.py  # Select option 2 for MGF
+   python scripts/data_gen.py
    ```
 
 2. **Train:**
    ```bash
-   python scripts/train.py  # Select option 2 for MGF
+   python scripts/train.py
    ```
 
 3. **Analyze:**
@@ -35,17 +35,12 @@ pip install -r requirements.txt
    jupyter notebook notebooks/06_mgf_prediction.ipynb
    ```
 
-### Other Options
-
-- Option 1: Next token prediction
-- Option 3: Mean prediction
-
 ### Notebooks
 
-- `01_data_viz.ipynb` - Data visualization
-- `02_analysis.ipynb` - Attention maps
-- `03_regression_plot.ipynb` - Regression analysis
-- `04_mean_prediction.ipynb` - Mean prediction
+- `01_data_viz.ipynb` - MGF dataset visualization
+- `02_analysis.ipynb` - Attention maps and MGF prediction example
+- `03_regression_plot.ipynb` - Mean/variance regression from MGF predictions
+- `04_mean_prediction.ipynb` - Single-trajectory mean/variance extraction
 - `06_mgf_prediction.ipynb` - MGF prediction and moment extraction
 
 ---

@@ -3,35 +3,24 @@ physics:
   mu: 0.0
   sigma: 0.2
   dt: 0.1
-  D: 0.02  # Diffusion coefficient D = σ²/2
+  marginal_variance: 0.2  # Target marginal variance for all trajectories
 
 theta_sampling:
   distribution: "lognormal"
   mean: 0.0  # Mean of underlying normal: log(θ) ~ N(0, 0.5)
-  sigma: 0.5  # Std of underlying normal
+  sigma: 0.4  # Std of underlying normal
 
-# Next-token approach parameters
-generation:
-  batch_size: 1000
-  total_time_steps: 1000
-  num_trajectories: 10000  # For MGF approach
-  sequence_length: 100  # For MGF approach
+structure:
+  num_trajectories: 1000 
+  sequence_length: 100  # Length of each trajectory  
 
-windowing:
-  input_len: 100
-  output_len: 50
-  stride: 1
 
-# MGF approach parameters
-mgf:
-  s_min: -2.0
-  s_max: 2.0
-  num_points: 50  # Number of s values in the grid
+target:
+  order: 6  # Number of s values in the grid
 
 training:
   train_split: 0.8
   batch_size: 64
 
 paths:
-  next_token_data_path: "data/ou_next_token.pt"
   mgf_data_path: "data/ou_mgf.pt"

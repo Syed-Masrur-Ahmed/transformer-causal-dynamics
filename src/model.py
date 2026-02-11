@@ -3,12 +3,15 @@ import torch.nn as nn
 import math
 
 class SimpleTransformer(nn.Module):
-    def __init__(self, d_input, d_model, n_head, n_layers, max_len=5000, d_output=2):
+    def __init__(self, d_input, d_model, n_head, n_layers, max_len=5000, d_output=2, dim_feedforward=None):
         super().__init__()
+        if dim_feedforward is None:
+            dim_feedforward = 4 * d_model
+            
         self.input_projection = nn.Linear(d_input, d_model)
         self.pos_encoder = PositionalEncoding(d_model)
         self.layers = nn.ModuleList([
-            AttentionBlock(d_model, n_head, d_model*4) for _ in range(n_layers)
+            AttentionBlock(d_model, n_head, dim_feedforward) for _ in range(n_layers)
         ])
         self.output_projection = nn.Linear(d_model, d_output)
 
@@ -28,9 +31,6 @@ class AttentionBlock(nn.Module):
         self.attn = nn.MultiheadAttention(d_model, n_head, batch_first=True)
         self.norm1 = nn.LayerNorm(d_model)
         
-        if dim_feedforward is None:
-            dim_feedforward = 4 * d_model
-            
         self.ffn = nn.Sequential(
             nn.Linear(d_model, dim_feedforward),
             nn.ReLU(),
@@ -61,9 +61,17 @@ class PositionalEncoding(nn.Module):
         super().__init__()
         pe = torch.zeros(max_len, d_model)
         position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        
+        # Handle both odd and even d_model
         div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
         pe[:, 0::2] = torch.sin(position * div_term)
-        pe[:, 1::2] = torch.cos(position * div_term)
+        
+        # For odd d_model, pe[:, 1::2] has one fewer column than pe[:, 0::2]
+        if d_model % 2 == 1:
+            pe[:, 1::2] = torch.cos(position * div_term[:-1])
+        else:
+            pe[:, 1::2] = torch.cos(position * div_term)
+            
         self.register_buffer('pe', pe)
 
     def forward(self, x):

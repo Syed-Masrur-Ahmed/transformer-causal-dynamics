@@ -10,6 +10,7 @@ venv/
 # Research outputs
 experiments/
 data/
+hidden/
 *.pt
 *.pth
 
