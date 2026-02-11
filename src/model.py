@@ -13,6 +13,15 @@ class SimpleTransformer(nn.Module):
         self.layers = nn.ModuleList([
             AttentionBlock(d_model, n_head, dim_feedforward) for _ in range(n_layers)
         ])
+        
+        # Feedforward network after attention blocks
+        self.feedforward = nn.Sequential(
+            nn.Linear(d_model, dim_feedforward),
+            nn.ReLU(),
+            nn.Linear(dim_feedforward, d_model)
+        )
+        self.norm_final = nn.LayerNorm(d_model)
+        
         self.output_projection = nn.Linear(d_model, d_output)
 
     def forward(self, src):
@@ -22,6 +31,11 @@ class SimpleTransformer(nn.Module):
         for layer in self.layers:
             x, attn = layer(x)
             attention_maps.append(attn)
+        
+        # Apply feedforward network after attention blocks
+        ff_out = self.feedforward(x)
+        x = self.norm_final(x + ff_out)  # Residual connection + layer norm
+        
         predictions = self.output_projection(x)
         return predictions, attention_maps
 
@@ -31,12 +45,6 @@ class AttentionBlock(nn.Module):
         self.attn = nn.MultiheadAttention(d_model, n_head, batch_first=True)
         self.norm1 = nn.LayerNorm(d_model)
         
-        self.ffn = nn.Sequential(
-            nn.Linear(d_model, dim_feedforward),
-            nn.ReLU(),
-            nn.Linear(dim_feedforward, d_model)
-        )
-        self.norm2 = nn.LayerNorm(d_model)
 
     def forward(self, x):
         # Causal Mask
@@ -49,10 +57,7 @@ class AttentionBlock(nn.Module):
         
         # Residual + Norm
         x = self.norm1(x + attn_out)
-        
-        # Feed-forward
-        ffn_out = self.ffn(x)
-        x = self.norm2(x + ffn_out)
+
         
         return x, attn_weights
 

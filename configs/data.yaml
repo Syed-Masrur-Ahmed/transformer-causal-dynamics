@@ -3,7 +3,7 @@ physics:
   mu: 0.0
   sigma: 0.2
   dt: 0.1
-  marginal_variance: 0.2  # Target marginal variance for all trajectories
+  marginal_variance: 0.2  # marginal variance for all trajectories
 
 theta_sampling:
   distribution: "lognormal"
@@ -16,7 +16,7 @@ structure:
 
 
 target:
-  order: 6  # Number of s values in the grid
+  order: 3  # Number of s values in the grid
 
 training:
   train_split: 0.8
