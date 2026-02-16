@@ -8,11 +8,12 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.model import SimpleTransformer
-from src.utils import load_full_config
+from src.utils import apply_experiment_id_to_paths, load_full_config
 
 
 def train_mgf_prediction(cfg):
     """Train for MGF prediction."""
+    apply_experiment_id_to_paths(cfg)
     train_cfg = cfg['hyperparameters']
     path_cfg = cfg['paths']
 
@@ -116,7 +117,8 @@ def train_mgf_prediction(cfg):
             }, model_path)
 
     # Save final loss history separately for easy access
-    loss_history_path = os.path.join(path_cfg['save_dir'], 'loss_history.pt')
+    loss_history_name = path_cfg.get('loss_history_name', 'loss_history.pt')
+    loss_history_path = os.path.join(path_cfg['save_dir'], loss_history_name)
     torch.save({
         'train_losses': train_losses,
         'val_losses': val_losses,
@@ -132,4 +134,5 @@ def train_mgf_prediction(cfg):
 
 if __name__ == "__main__":
     cfg = load_full_config()
+    apply_experiment_id_to_paths(cfg)
     train_mgf_prediction(cfg)

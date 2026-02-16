@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.mgf_dataset import simulate_ou_process
 from src.model import SimpleTransformer
-from src.utils import deep_update, load_full_config
+from src.utils import apply_experiment_id_to_paths, deep_update, load_full_config
 
 
 def load_test_config() -> Dict:
@@ -29,6 +29,7 @@ def load_test_config() -> Dict:
         test_cfg = yaml.safe_load(f) or {}
 
     deep_update(cfg, test_cfg)
+    apply_experiment_id_to_paths(cfg)
     return cfg
 
 
@@ -117,6 +118,7 @@ def get_test_sweeps(cfg: Dict) -> List[Dict]:
 
 
 def run_predictive_tests(cfg: Dict) -> None:
+    apply_experiment_id_to_paths(cfg)
     device_cfg = cfg.get("system", {}).get("device", "cpu")
     device = torch.device("cuda" if torch.cuda.is_available() and device_cfg == "cuda" else "cpu")
 
@@ -196,7 +198,8 @@ def run_predictive_tests(cfg: Dict) -> None:
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     output_dir = os.path.join(project_root, cfg.get("paths", {}).get("save_dir", "experiments"))
     os.makedirs(output_dir, exist_ok=True)
-    output_csv = os.path.join(output_dir, "predictive_test_results.csv")
+    output_name = cfg.get("paths", {}).get("predictive_test_results_name", "predictive_test_results.csv")
+    output_csv = os.path.join(output_dir, output_name)
 
     fieldnames = [
         "sweep_name",
