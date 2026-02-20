@@ -1,4 +1,5 @@
 
+import argparse
 import csv
 import os
 import sys
@@ -56,17 +57,35 @@ def build_sequence_lengths(seq_min: int, seq_max: int, seq_step: int) -> List[in
     return lengths
 
 
-def compute_truth_final_step(
+def compute_truth_all_coefficients(
     trajectories: torch.Tensor,
-    theta: float,
+    theta_tensor: torch.Tensor,
     mu: float,
     dt: float,
+    D_tensor: torch.Tensor,
 ) -> torch.Tensor:
     """
-    Ground-truth conditional mean at final step, matching notebook logic:
-    truth = mu + (X_t - mu) * exp(-theta * dt)
+    Compute ground truth for all 3 MGF coefficients at final step.
+
+    Returns:
+        truth: (num_trajectories, 3) tensor
+            - truth[:, 0]: Conditional mean = mu + (X_t - mu) * exp(-theta * dt)
+            - truth[:, 1]: Conditional variance = (D/theta) * (1 - exp(-2*theta*dt))
+            - truth[:, 2]: Zero (third MGF coefficient)
     """
-    return mu + (trajectories[:, -1, 0] - mu) * np.exp(-theta * dt)
+    num_trajectories = trajectories.shape[0]
+    truth = torch.zeros(num_trajectories, 3, dtype=torch.float32)
+
+    # Coefficient 0: Conditional mean
+    truth[:, 0] = mu + (trajectories[:, -1, 0] - mu) * torch.exp(-theta_tensor * dt)
+
+    # Coefficient 1: Conditional variance
+    truth[:, 1] = (D_tensor / theta_tensor) * (1 - torch.exp(-2 * theta_tensor * dt))
+
+    # Coefficient 2: Zero
+    truth[:, 2] = 0.0
+
+    return truth
 
 
 def compute_relative_error_decomposition(preds: torch.Tensor, truth: torch.Tensor) -> Dict[str, float]:
@@ -84,6 +103,48 @@ def compute_relative_error_decomposition(preds: torch.Tensor, truth: torch.Tenso
         "variance": float(variance),
         "relative_error": float(relative_error),
     }
+
+
+def get_coefficient_selection(args_coef) -> int:
+    """
+    Get user selection for which MGF coefficient to test.
+    Returns coefficient index (0, 1, or 2).
+    """
+    coefficient_names = {
+        0: "Conditional Mean (mu + (X_t - mu) * exp(-theta*dt))",
+        1: "Conditional Variance ((D/theta) * (1 - exp(-2*theta*dt)))",
+        2: "Zero (third MGF coefficient)",
+    }
+
+    # If provided via command-line argument
+    if args_coef is not None:
+        if args_coef not in [0, 1, 2]:
+            raise ValueError(f"Invalid coefficient index: {args_coef}. Must be 0, 1, or 2.")
+        print(f"\nTesting MGF Coefficient {args_coef}: {coefficient_names[args_coef]}")
+        return args_coef
+
+    # Interactive selection
+    print("\n" + "=" * 70)
+    print("SELECT MGF COEFFICIENT TO TEST")
+    print("=" * 70)
+    for idx, name in coefficient_names.items():
+        print(f"  [{idx}] {name}")
+    print("=" * 70)
+
+    while True:
+        try:
+            selection = input("\nEnter coefficient index (0, 1, or 2): ").strip()
+            coef_idx = int(selection)
+            if coef_idx in [0, 1, 2]:
+                print(f"\n✓ Selected: Coefficient {coef_idx} - {coefficient_names[coef_idx]}\n")
+                return coef_idx
+            else:
+                print("Invalid selection. Please enter 0, 1, or 2.")
+        except ValueError:
+            print("Invalid input. Please enter a number (0, 1, or 2).")
+        except KeyboardInterrupt:
+            print("\n\nTest cancelled by user.")
+            sys.exit(0)
 
 
 def get_test_sweeps(cfg: Dict) -> List[Dict]:
@@ -117,7 +178,7 @@ def get_test_sweeps(cfg: Dict) -> List[Dict]:
     return sweeps
 
 
-def run_predictive_tests(cfg: Dict) -> None:
+def run_predictive_tests(cfg: Dict, coefficient_idx: int = 0) -> None:
     apply_experiment_id_to_paths(cfg)
     device_cfg = cfg.get("system", {}).get("device", "cpu")
     device = torch.device("cuda" if torch.cuda.is_available() and device_cfg == "cuda" else "cpu")
@@ -145,8 +206,10 @@ def run_predictive_tests(cfg: Dict) -> None:
     rows = []
     total_jobs = sum(len(lengths) * len(thetas) for _, lengths, thetas in sweep_jobs)
 
-    print(f"Running predictive tests on {total_jobs} (sequence_length, theta) settings...")
-    progress = tqdm(total=total_jobs, desc="Predictive sweep")
+    coefficient_names = ["mean", "variance", "zero"]
+    print(f"\nRunning predictive tests for MGF coefficient {coefficient_idx} ({coefficient_names[coefficient_idx]})...")
+    print(f"Total test conditions: {total_jobs} (sequence_length, theta) combinations\n")
+    progress = tqdm(total=total_jobs, desc=f"Testing coef_{coefficient_idx}")
 
     with torch.no_grad():
         for sweep, sequence_lengths, theta_grid in sweep_jobs:
@@ -170,9 +233,16 @@ def run_predictive_tests(cfg: Dict) -> None:
                     )
 
                     traj_device = trajectories.to(device)
-                    trained_preds = trained_model(traj_device)[0][:, -1, 0].detach().cpu()
-                    untrained_preds = untrained_model(traj_device)[0][:, -1, 0].detach().cpu()
-                    truth = compute_truth_final_step(trajectories, theta=float(theta), mu=mu, dt=dt)
+
+                    # Get predictions for selected coefficient
+                    trained_preds = trained_model(traj_device)[0][:, -1, coefficient_idx].detach().cpu()
+                    untrained_preds = untrained_model(traj_device)[0][:, -1, coefficient_idx].detach().cpu()
+
+                    # Compute ground truth for all coefficients
+                    truth_all = compute_truth_all_coefficients(
+                        trajectories, theta_tensor, mu, dt, d_tensor
+                    )
+                    truth = truth_all[:, coefficient_idx]
 
                     trained_metrics = compute_relative_error_decomposition(trained_preds, truth)
                     untrained_metrics = compute_relative_error_decomposition(untrained_preds, truth)
@@ -198,7 +268,15 @@ def run_predictive_tests(cfg: Dict) -> None:
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     output_dir = os.path.join(project_root, cfg.get("paths", {}).get("save_dir", "experiments"))
     os.makedirs(output_dir, exist_ok=True)
-    output_name = cfg.get("paths", {}).get("predictive_test_results_name", "predictive_test_results.csv")
+
+    # Include coefficient index in output filename
+    base_name = cfg.get("paths", {}).get("predictive_test_results_name", "predictive_test_results.csv")
+    name_parts = base_name.rsplit(".", 1)
+    if len(name_parts) == 2:
+        output_name = f"{name_parts[0]}_coef{coefficient_idx}.{name_parts[1]}"
+    else:
+        output_name = f"{base_name}_coef{coefficient_idx}"
+
     output_csv = os.path.join(output_dir, output_name)
 
     fieldnames = [
@@ -222,5 +300,37 @@ def run_predictive_tests(cfg: Dict) -> None:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Test transformer model on MGF coefficient predictions",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Interactive mode (prompts for coefficient selection)
+  python scripts/test.py
+
+  # Test conditional mean (coefficient 0)
+  python scripts/test.py --coef 0
+
+  # Test conditional variance (coefficient 1)
+  python scripts/test.py --coef 1
+
+  # Test zero coefficient (coefficient 2)
+  python scripts/test.py --coef 2
+        """
+    )
+    parser.add_argument(
+        "--coef",
+        type=int,
+        choices=[0, 1, 2],
+        default=None,
+        help="MGF coefficient to test: 0=mean, 1=variance, 2=zero (if not provided, interactive prompt)"
+    )
+
+    args = parser.parse_args()
     config = load_test_config()
-    run_predictive_tests(config)
+
+    # Get coefficient selection (from args or interactive prompt)
+    coefficient_idx = get_coefficient_selection(args.coef)
+
+    # Run tests
+    run_predictive_tests(config, coefficient_idx)
