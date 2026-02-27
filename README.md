@@ -29,6 +29,10 @@ pip install -r requirements.txt
    ```bash
    python scripts/train.py
    ```
+   Optional variable sequence length training:
+   ```bash
+   python scripts/train.py --variable-seq-len --min-seq-len 16
+   ```
 
 3. **Analyze:**
    ```bash

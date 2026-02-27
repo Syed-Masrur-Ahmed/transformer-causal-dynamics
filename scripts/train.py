@@ -4,6 +4,7 @@ import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader, random_split
 import os
 import sys
+import argparse
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -11,7 +12,19 @@ from src.model import SimpleTransformer
 from src.utils import apply_experiment_id_to_paths, load_full_config
 
 
-def train_mgf_prediction(cfg):
+def _randomly_truncate_batch(batch_X, batch_Y, min_seq_len):
+    """
+    Truncate batch sequences by a random amount.
+    The truncated amount is sampled uniformly from [0, seq_len - min_seq_len].
+    """
+    seq_len = batch_X.size(1)
+    max_truncation = seq_len - min_seq_len
+    truncation = torch.randint(0, max_truncation + 1, (1,)).item()
+    effective_len = seq_len - truncation
+    return batch_X[:, :effective_len, :], batch_Y[:, :effective_len, :]
+
+
+def train_mgf_prediction(cfg, variable_seq_len=False, min_seq_len=2):
     """Train for MGF prediction."""
     apply_experiment_id_to_paths(cfg)
     train_cfg = cfg['hyperparameters']
@@ -23,8 +36,19 @@ def train_mgf_prediction(cfg):
 
     trajectories = data['trajectories']  # (N, seq_len, 1)
     targets = data['targets']  # (N, seq_len, order)
+    full_seq_len = trajectories.shape[1]
+
+    if variable_seq_len and min_seq_len < 1:
+        raise ValueError("min_seq_len must be at least 1 when variable sequence length is enabled.")
+    if variable_seq_len and min_seq_len > full_seq_len:
+        raise ValueError(
+            f"min_seq_len ({min_seq_len}) cannot exceed data sequence length ({full_seq_len})."
+        )
 
     print(f"Data shapes: trajectories={trajectories.shape}, targets={targets.shape}")
+    print(f"Variable sequence length training: {'ON' if variable_seq_len else 'OFF'}")
+    if variable_seq_len:
+        print(f"Sampling truncation each batch with minimum sequence length = {min_seq_len}")
 
     # Create dataset
     dataset = TensorDataset(trajectories, targets)
@@ -69,6 +93,9 @@ def train_mgf_prediction(cfg):
         for batch_X, batch_Y in train_loader:
             batch_X, batch_Y = batch_X.to(device), batch_Y.to(device)
             optimizer.zero_grad()
+
+            if variable_seq_len:
+                batch_X, batch_Y = _randomly_truncate_batch(batch_X, batch_Y, min_seq_len)
 
             # Model predicts targets for all timesteps
             preds, _ = model(batch_X)  # (batch, seq_len, d_output)
@@ -133,6 +160,24 @@ def train_mgf_prediction(cfg):
     print(f"Loss history saved to {loss_history_path}")
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Train transformer for MGF prediction.")
+    parser.add_argument(
+        "--variable-seq-len",
+        action="store_true",
+        help="Enable variable sequence length training via random per-batch truncation."
+    )
+    parser.add_argument(
+        "--min-seq-len",
+        type=int,
+        default=2,
+        help="Minimum allowed sequence length when --variable-seq-len is enabled."
+    )
+    args = parser.parse_args()
+
     cfg = load_full_config()
     apply_experiment_id_to_paths(cfg)
-    train_mgf_prediction(cfg)
+    train_mgf_prediction(
+        cfg,
+        variable_seq_len=args.variable_seq_len,
+        min_seq_len=args.min_seq_len
+    )
