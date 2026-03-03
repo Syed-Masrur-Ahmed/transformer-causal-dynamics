@@ -1,0 +1,124 @@
+---
+title: "Evaluation"
+---
+
+## Goal
+
+The evaluation measures whether the trained model correctly predicts the **conditional moments** of the next-step OU distribution, as a function of two experimental variables:
+
+- **$\theta$** — the mean-reversion speed (the unknown parameter the model must infer)
+- **$L$** — the sequence length (how much context the model has available)
+
+## Evaluation Script
+
+`scripts/test.py` runs a **theta–sequence-length sweep**: for each $(\theta, L)$ pair it generates fresh trajectories, runs both a trained and an untrained model, and records prediction quality metrics.
+
+```bash
+# Test conditional mean (output index 0)
+python scripts/test.py --coef 0
+
+# Test conditional variance (output index 1)
+python scripts/test.py --coef 1
+
+# Interactive prompt
+python scripts/test.py
+```
+
+## Test Configuration
+
+The sweep parameters are defined in `configs/test.yaml`:
+
+```yaml
+theta_sweeps:
+  num_replicates: 5000          # trajectories per (theta, L) cell
+  num_theta_values: 25          # number of theta grid points
+  sequence_length_min: 5
+  sequence_length_max: 400
+  sequence_length_step: 50
+  mu: 0.0
+  dt: 0.1
+  fixed_marginal_variance: 0.1
+  theta_min: 0.1
+  theta_max: 4.0
+```
+
+This produces $25 \times 9 = 225$ test conditions (25 $\theta$ values × 9 sequence lengths from 5 to 400 in steps of 50), each evaluated on 5,000 independent replicates.
+
+## MGF Coefficients
+
+The three output channels of the model correspond to:
+
+| Index | Name | Ground Truth |
+|-------|------|-------------|
+| 0 | Conditional mean | $\mu + (X_t - \mu)\,e^{-\theta\Delta t}$ |
+| 1 | Conditional variance | $(D/\theta)(1 - e^{-2\theta\Delta t})$ |
+| 2 | Zero | $0$ |
+
+Each can be tested independently with `--coef 0`, `--coef 1`, or `--coef 2`.
+
+## Error Decomposition
+
+For each $(\theta, L)$ cell, the evaluation computes a **bias–variance decomposition** of the relative prediction error:
+
+$$
+\varepsilon_i = \frac{\hat{y}_i - y_i}{y_i}
+$$
+
+| Metric | Formula |
+|--------|---------|
+| Squared bias | $\left(\mathbb{E}[\varepsilon]\right)^2$ |
+| Variance | $\text{Var}[\varepsilon]$ |
+| Total relative error | Squared bias + Variance |
+
+```python
+# scripts/test.py
+rel_err = (preds - truth) / denom
+squared_bias = torch.mean(rel_err).item() ** 2
+variance     = torch.var(rel_err, unbiased=False).item()
+relative_error = squared_bias + variance
+```
+
+A small numerical epsilon ($10^{-12}$) is added to the denominator to handle cases where the ground truth is zero (coefficient index 2).
+
+## Baseline Comparison
+
+Every test condition is evaluated for both:
+
+- **Trained model** — the best checkpoint from `experiments/model_mgf.pth`
+- **Untrained model** — a randomly initialized model with identical architecture
+
+Comparing trained vs. untrained isolates the effect of learning from the random-initialization prior.
+
+## Output Format
+
+Results are saved as a CSV in `experiments/`:
+
+```
+predictive_test_results_coef0.csv   (conditional mean)
+predictive_test_results_coef1.csv   (conditional variance)
+```
+
+Each row corresponds to one $(\theta, L)$ cell:
+
+| Column | Description |
+|--------|-------------|
+| `sweep_name` | Name of the sweep configuration |
+| `sequence_length` | Context length $L$ |
+| `theta` | Mean-reversion speed $\theta$ |
+| `trained_squared_bias` | Squared bias of trained model |
+| `trained_variance` | Variance of trained model errors |
+| `trained_relative_error` | Total relative error (trained) |
+| `untrained_squared_bias` | Squared bias of untrained model |
+| `untrained_variance` | Variance of untrained model errors |
+| `untrained_relative_error` | Total relative error (untrained) |
+| `num_replicates` | Number of trajectories in this cell |
+
+## Notebook Analysis
+
+The `analysis_notebooks/analysis.ipynb` notebook provides interactive exploration:
+
+- Load the trained and untrained models
+- Visualize the loss curves
+- Generate a test dataset with varying $\theta$
+- Plot prediction error vs. $\theta$ for both models
+- Inspect attention maps from each layer

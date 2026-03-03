@@ -8,7 +8,7 @@ physics:
 theta_sampling:
   distribution: "lognormal"
   mean: 0.0  # Mean of underlying normal: log(θ) ~ N(0, 0.5)
-  sigma: 0.4  # Std of underlying normal
+  sigma: 0.0  # Std of underlying normal
 
 structure:
   num_trajectories: 1000 

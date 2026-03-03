@@ -1,0 +1,34 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Transformer Causal Dynamics"
+  description: "Training transformers to learn Ornstein–Uhlenbeck process dynamics via moment-generating function prediction"
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - section: "Getting Started"
+        contents:
+          - index.qmd
+      - section: "Background"
+        contents:
+          - ou-process.qmd
+      - section: "Methods"
+        contents:
+          - model.qmd
+          - training.qmd
+      - section: "Experiments"
+        contents:
+          - evaluation.qmd
+          - results.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    highlight-style: github
+    math: mathjax

@@ -1,0 +1,135 @@
+---
+title: "Training"
+---
+
+## Objective
+
+The model is trained with **mean squared error (MSE)** between predictions and ground-truth conditional moments at every timestep and every trajectory:
+
+$$
+\mathcal{L} = \frac{1}{N \cdot L \cdot K} \sum_{i=1}^{N} \sum_{t=1}^{L} \sum_{k=1}^{K} \left(\hat{y}^{(k)}_{i,t} - y^{(k)}_{i,t}\right)^2
+$$
+
+where $\hat{y}^{(k)}_{i,t}$ is the model's prediction of cumulant $k$ for trajectory $i$ at time $t$, and $y^{(k)}_{i,t}$ is the ground-truth value.
+
+Training on **all timesteps** simultaneously (not just the last) acts as a form of data augmentation and encourages the model to learn useful representations at all context lengths.
+
+## Data Loading
+
+The dataset is split 80/20 into training and validation sets (randomized split):
+
+```python
+train_size = int(0.8 * len(dataset))
+val_size   = len(dataset) - train_size
+train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+```
+
+Each batch contains `(trajectories, targets)` tensors of shape `(batch, seq_len, *)`.
+
+## Optimizer
+
+- **Optimizer:** Adam with learning rate $10^{-3}$
+- **Loss function:** `nn.MSELoss()` (averages over all elements)
+- **Epochs:** 200
+- **Batch size:** 64
+
+```yaml
+# configs/train.yaml
+hyperparameters:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 200
+
+system:
+  device: "cpu"
+
+paths:
+  save_dir: "experiments"
+  mgf_model_name: "model_mgf.pth"
+```
+
+## Variable Sequence Length Training
+
+An optional **variable sequence length** mode randomly truncates each batch during training, so the model is exposed to many different context lengths in a single epoch. This can improve generalization to short sequences.
+
+```bash
+# Enable variable-length training with minimum context of 16 tokens
+python scripts/train.py --variable-seq-len --min-seq-len 16
+```
+
+At each training step, a random truncation amount is sampled uniformly:
+
+```python
+# scripts/train.py
+truncation = torch.randint(0, max_truncation + 1, (1,)).item()
+effective_len = seq_len - truncation
+batch_X = batch_X[:, :effective_len, :]
+batch_Y = batch_Y[:, :effective_len, :]
+```
+
+## Checkpointing
+
+The **best model by validation loss** is saved during training:
+
+```python
+if avg_val_loss < best_val_loss:
+    best_val_loss = avg_val_loss
+    torch.save({
+        'model_state_dict': model.state_dict(),
+        'train_losses':     train_losses,
+        'val_losses':       val_losses,
+        'best_val_loss':    best_val_loss,
+        'epoch':            epoch + 1,
+        'config':           cfg
+    }, model_path)
+```
+
+After training, a separate **loss history** file is saved for easy plotting:
+
+```python
+torch.save({
+    'train_losses':     train_losses,
+    'val_losses':       val_losses,
+    'epochs':           list(range(1, len(train_losses) + 1)),
+    'final_train_loss': train_losses[-1],
+    'final_val_loss':   val_losses[-1],
+    'best_val_loss':    best_val_loss
+}, loss_history_path)
+```
+
+Saved artifacts:
+
+| File | Contents |
+|------|---------|
+| `experiments/model_mgf.pth` | Best checkpoint (weights + loss history + config) |
+| `experiments/loss_history.pt` | Full train/val loss curves |
+
+## Running Training
+
+```bash
+# Standard training
+python scripts/train.py
+
+# Variable sequence length (recommended for better generalization)
+python scripts/train.py --variable-seq-len --min-seq-len 16
+```
+
+Training prints a table of train/val loss per epoch:
+
+```
+Epoch | Train Loss | Val Loss
+----------------------------------------
+    1 | 0.012345   | 0.013210
+    2 | 0.010234   | 0.011089
+  ...
+```
+
+## Experiment Tracking
+
+An optional **experiment ID** can be set via the `EXPERIMENT_ID` environment variable or in `configs/train.yaml`. When set, all output artifacts are prefixed with the ID to avoid overwriting previous runs:
+
+```bash
+EXPERIMENT_ID=run_001 python scripts/train.py
+# saves: experiments/run_001_model_mgf.pth
+#        experiments/run_001_loss_history.pt
+```

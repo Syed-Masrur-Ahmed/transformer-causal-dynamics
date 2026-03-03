@@ -1,0 +1,150 @@
+---
+title: "OU Process & Data Generation"
+---
+
+## The Ornstein–Uhlenbeck Process
+
+The **Ornstein–Uhlenbeck (OU) process** is a continuous-time stochastic process that mean-reverts toward a long-run level $\mu$:
+
+$$
+dX_t = \theta(\mu - X_t)\,dt + \sigma\,dW_t
+$$
+
+where:
+
+| Symbol | Meaning | Default value |
+|--------|---------|--------------|
+| $\theta > 0$ | Mean-reversion speed | lognormal-sampled per trajectory |
+| $\mu$ | Long-run mean | `0.0` |
+| $\sigma$ | Diffusion coefficient | derived from fixed marginal variance |
+| $W_t$ | Standard Brownian motion | — |
+
+Because the OU process is a linear SDE, its **one-step transition is exactly Gaussian**:
+
+$$
+X_{t+\Delta t} \mid X_t \;\sim\; \mathcal{N}\!\left(\mu_{\text{cond}},\; \sigma^2_{\text{cond}}\right)
+$$
+
+with
+
+$$
+\mu_{\text{cond}}(X_t) = \mu + (X_t - \mu)\,e^{-\theta \Delta t}
+$$
+
+$$
+\sigma^2_{\text{cond}} = \frac{D}{\theta}\left(1 - e^{-2\theta \Delta t}\right)
+$$
+
+where $D = \sigma^2/2$ is the diffusion constant. These are the **ground-truth targets** the model is trained to predict.
+
+## Fixed Marginal Variance Design
+
+A key design choice is to keep the **marginal (stationary) variance** constant across all trajectories:
+
+$$
+\text{Var}[X_\infty] = \frac{D}{\theta} = \text{const.}
+$$
+
+This means $D = \text{const.} \times \theta$, so $\sigma$ is not independently sampled — it is tied to $\theta$.
+
+**Why this matters:** the marginal variance controls the overall scale of the trajectory. By fixing it, all trajectories look the same at the level of marginal statistics; the only signal the transformer can use to infer $\theta$ is the **autocorrelation structure** of the time series.
+
+## Theta Sampling
+
+Each trajectory in the dataset has its own $\theta$ value, drawn from a **log-normal distribution**:
+
+$$
+\log\theta \;\sim\; \mathcal{N}(0,\; 0.4^2)
+$$
+
+This ensures $\theta > 0$ and produces a realistic spread of mean-reversion speeds. The log-normal parameterization avoids negative values and is natural for positive rate parameters.
+
+```yaml
+# configs/data.yaml
+theta_sampling:
+  distribution: "lognormal"
+  mean: 0.0       # mean of log(θ)
+  sigma: 0.4      # std of log(θ)
+```
+
+## Exact Simulation
+
+Trajectories are simulated using the **exact conditional distribution** (no Euler–Maruyama discretization error):
+
+```python
+# src/mgf_dataset.py
+exp_theta_dt = torch.exp(-theta_tensor * dt)
+sqrt_term = torch.sqrt(D / theta * (1 - torch.exp(-2 * theta * dt)))
+X[t] = X[t-1] * exp_theta_dt + mu * (1 - exp_theta_dt) + sqrt_term * dW
+```
+
+At each step $t$, $\text{d}W \sim \mathcal{N}(0, 1)$ independently. This is exact because the OU transition kernel is Gaussian.
+
+## Dataset Structure
+
+The `create_mgf_dataset` function (in `src/mgf_dataset.py`) returns:
+
+| Tensor | Shape | Description |
+|--------|-------|-------------|
+| `trajectories` | `(N, L, 1)` | Observed OU paths |
+| `theta_tensor` | `(N,)` | Per-trajectory $\theta$ values |
+| `targets` | `(N, L, K)` | Prediction targets at each timestep |
+
+where $N$ = number of trajectories, $L$ = sequence length, $K$ = number of MGF query points (= `target.order` in `data.yaml`, default 3).
+
+### Targets
+
+The target tensor has the following columns:
+
+| Index | Content | Formula |
+|-------|---------|---------|
+| `0` | Conditional mean | $\mu + (X_t - \mu)\,e^{-\theta \Delta t}$ |
+| `1` | Conditional variance | $(D/\theta)(1 - e^{-2\theta\Delta t})$ |
+| `2+` | Zero (unused) | — |
+
+The model is trained to predict all `K` outputs simultaneously via MSE.
+
+## Configuration
+
+All dataset parameters live in `configs/data.yaml`:
+
+```yaml
+physics:
+  theta: 0.15         # (unused — theta is sampled per trajectory)
+  mu: 0.0
+  sigma: 0.2          # (unused — sigma derived from marginal_variance)
+  dt: 0.1
+  marginal_variance: 0.2
+
+theta_sampling:
+  distribution: "lognormal"
+  mean: 0.0
+  sigma: 0.4
+
+structure:
+  num_trajectories: 1000
+  sequence_length: 500
+
+target:
+  order: 3            # number of output cumulants
+
+training:
+  train_split: 0.8
+  batch_size: 64
+
+paths:
+  mgf_data_path: "data/ou_mgf.pt"
+```
+
+## Saved Dataset Format
+
+`python scripts/data_gen.py` saves a `.pt` file at `data/ou_mgf.pt` with the dictionary:
+
+```python
+{
+    'trajectories': torch.Tensor,   # (N, L, 1)
+    'targets':      torch.Tensor,   # (N, L, K)
+    'theta_values': torch.Tensor,   # (N,)
+    'config':       dict            # snapshot of configs at generation time
+}
+```

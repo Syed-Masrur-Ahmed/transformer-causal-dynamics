@@ -1,0 +1,163 @@
+---
+title: "Model Architecture"
+---
+
+## Overview
+
+The model is a **causally-masked transformer** (`SimpleTransformer`) that maps a scalar time series of length $L$ to a sequence of $K$-dimensional predictions — one prediction per timestep. The architecture has three main stages:
+
+1. **Hermite embedding** — lifts each scalar input to a polynomial feature vector
+2. **Transformer encoder** — processes the sequence with causal (autoregressive) attention
+3. **Output projection** — maps to the $K$ prediction targets
+
+## Hermite Embedding
+
+Instead of a learned linear input projection, each scalar $X_t$ is embedded by evaluating the first $d_{\text{model}}$ **probabilist's Hermite polynomials**:
+
+$$
+H_n(x) \quad n = 0, 1, \ldots, d_{\text{model}}-1
+$$
+
+defined by the recurrence $H_0 = 1$, $H_1 = x$, and:
+
+$$
+H_{n+1}(x) = x\,H_n(x) - n\,H_{n-1}(x)
+$$
+
+With normalization, the embedding vector for input $x$ is:
+
+$$
+\mathbf{e}(x) = \left(\frac{H_0(x)}{\sqrt{0!}},\;\frac{H_1(x)}{\sqrt{1!}},\;\ldots,\;\frac{H_{d-1}(x)}{\sqrt{(d-1)!}}\right) \in \mathbb{R}^d
+$$
+
+**Why Hermite polynomials?** They form an orthogonal basis of $L^2(\mathbb{R}, \mathcal{N}(0,1))$ — the natural function space for Gaussian-distributed inputs. For OU process observations (which are marginally Gaussian by the fixed-variance construction), this provides a rich and well-conditioned feature space without requiring learned parameters.
+
+### Implementation
+
+```python
+# src/model.py — HermiteEmbedding
+class HermiteEmbedding(nn.Module):
+    def __init__(self, L, normalize=True):
+        # precomputes sqrt(n!) normalization factors as a buffer
+        ...
+
+    def forward(self, x):
+        # x: (batch, seq_len) or (batch, seq_len, 1)
+        # returns: (batch, seq_len, L+1)
+        ...
+```
+
+## Positional Encoding
+
+Standard **sinusoidal positional encoding** is added after the input projection:
+
+$$
+\text{PE}_{(t, 2i)} = \sin\!\left(\frac{t}{10000^{2i/d}}\right), \quad
+\text{PE}_{(t, 2i+1)} = \cos\!\left(\frac{t}{10000^{2i/d}}\right)
+$$
+
+This encodes absolute position in the sequence, which is important for the model to know "how much data it has seen."
+
+## Attention Blocks
+
+Each `AttentionBlock` applies:
+
+1. **Causal multi-head self-attention** with a triangular upper mask (each position only attends to itself and earlier positions)
+2. **Residual connection** + **LayerNorm**
+
+```python
+# src/model.py — AttentionBlock.forward
+mask = torch.triu(torch.ones(seq_len, seq_len) * float('-inf'), diagonal=1)
+attn_out, attn_weights = self.attn(x, x, x, attn_mask=mask)
+x = self.norm1(x + attn_out)
+```
+
+Causal masking is essential: at timestep $t$, the model should only condition on $X_1, \ldots, X_t$, never on future observations.
+
+## Feed-Forward Layer
+
+After all attention blocks, a shared feed-forward network is applied:
+
+$$
+\text{FF}(x) = W_2 \,\text{ReLU}(W_1 x + b_1) + b_2
+$$
+
+followed by a final residual connection and LayerNorm.
+
+## Output Projection
+
+A single linear layer maps $d_{\text{model}} \to K$ (= `d_output` = `target.order` = 3), producing the prediction for each of the $K$ targets at every timestep.
+
+## Architecture Diagram
+
+```
+Input: (batch, L, 1)
+         │
+         ▼
+  HermiteEmbedding          scalar → (batch, L, d_model)
+         │
+         ▼
+  input_projection          linear, (d_model → d_model)
+         │
+         ▼
+  PositionalEncoding        additive sinusoidal PE
+         │
+         ▼
+  AttentionBlock × n_layers causal MHA + residual + norm
+         │
+         ▼
+  FeedForward               (d_model → dim_feedforward → d_model)
+         │
+         ▼
+  LayerNorm
+         │
+         ▼
+  output_projection         linear, (d_model → d_output)
+         │
+         ▼
+Output: (batch, L, K)
+```
+
+## Hyperparameters
+
+Configured in `configs/model.yaml`:
+
+```yaml
+architecture:
+  d_input: 1
+  d_model: 20          # embedding / hidden dimension
+  n_head: 1            # attention heads
+  n_layers: 2          # number of AttentionBlocks
+  max_len: 5000        # max sequence length for positional encoding
+  dim_feedforward: 64  # inner dimension of the FF layer
+  d_output: 3          # number of output cumulants (= target.order)
+```
+
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| `d_model` | 20 | Also controls Hermite degree ($L = d_{\text{model}} - 1 = 19$) |
+| `n_head` | 1 | Single attention head |
+| `n_layers` | 2 | Two stacked attention blocks |
+| `dim_feedforward` | 64 | FF hidden size |
+| `d_output` | 3 | Must match `target.order` in `data.yaml` |
+
+## Parameter Count
+
+With the default configuration, the model has a small number of parameters:
+
+```python
+total_params = sum(p.numel() for p in model.parameters())
+# Printed during training: e.g., ~5,000–15,000 parameters
+```
+
+The model is intentionally small to study what minimal capacity is needed to extract distributional information from OU trajectories.
+
+## Returning Attention Maps
+
+The `forward` method returns both predictions and the list of attention weight tensors (one per layer), which are useful for visualization:
+
+```python
+predictions, attention_maps = model(src)
+# predictions:    (batch, L, K)
+# attention_maps: list of (batch, n_head, L, L) tensors
+```
