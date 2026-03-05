@@ -21,11 +21,17 @@ website:
           - training.qmd
       - section: "Experiments"
         contents:
-          - section: "Experiment 1: Single θ, Constant Seq Len"
+          - section: "Theta Sweep"
             contents:
-              - experiment1.qmd
               - evaluation.qmd
-              - results.qmd
+              - section: "Experiment 1: Single θ, Constant Seq Len"
+                contents:
+                  - experiment1.qmd
+                  - results.qmd
+              - section: "Experiment 2: Variable θ, Constant Seq Len"
+                contents:
+                  - experiment2.qmd
+                  - results2.qmd
 
 format:
   html:

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Training – Transformer Causal Dynamics</title>
+<title>Experiment 2: Variable θ, Constant Sequence Length – Transformer Causal Dynamics</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -147,7 +147,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./model.html">Methods</a></li><li class="breadcrumb-item"><a href="./training.html">Training</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./evaluation.html">Theta Sweep</a></li><li class="breadcrumb-item"><a href="./experiment2.html">Experiment 2: Variable θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./experiment2.html">Experiment 2: Variable θ, Constant Sequence Length</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -223,7 +223,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./training.html" class="sidebar-item-text sidebar-link active">
+  <a href="./training.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Training</span></a>
   </div>
 </li>
@@ -240,23 +240,32 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
- <span class="menu-text">Experiment 1: Single θ, Constant Seq Len</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theta Sweep</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./experiment1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Experiment 1: Single θ, Constant Sequence Length</span></a>
-  </div>
-</li>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./evaluation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Experiment 1: Single θ, Constant Seq Len</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./experiment1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Experiment 1: Single θ, Constant Sequence Length</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -269,16 +278,16 @@ window.Quarto = {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
  <span class="menu-text">Experiment 2: Variable θ, Constant Seq Len</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./experiment2.html" class="sidebar-item-text sidebar-link">
+  <a href="./experiment2.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Experiment 2: Variable θ, Constant Sequence Length</span></a>
   </div>
 </li>
@@ -288,6 +297,8 @@ window.Quarto = {
  <span class="menu-text">Results</span></a>
   </div>
 </li>
+      </ul>
+  </li>
       </ul>
   </li>
       </ul>
@@ -302,22 +313,17 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#objective" id="toc-objective" class="nav-link active" data-scroll-target="#objective">Objective</a></li>
-  <li><a href="#data-loading" id="toc-data-loading" class="nav-link" data-scroll-target="#data-loading">Data Loading</a></li>
-  <li><a href="#optimizer" id="toc-optimizer" class="nav-link" data-scroll-target="#optimizer">Optimizer</a></li>
-  <li><a href="#variable-sequence-length-training" id="toc-variable-sequence-length-training" class="nav-link" data-scroll-target="#variable-sequence-length-training">Variable Sequence Length Training</a></li>
-  <li><a href="#checkpointing" id="toc-checkpointing" class="nav-link" data-scroll-target="#checkpointing">Checkpointing</a></li>
-  <li><a href="#running-training" id="toc-running-training" class="nav-link" data-scroll-target="#running-training">Running Training</a></li>
-  <li><a href="#experiment-tracking" id="toc-experiment-tracking" class="nav-link" data-scroll-target="#experiment-tracking">Experiment Tracking</a></li>
+  <li><a href="#training" id="toc-training" class="nav-link active" data-scroll-target="#training">Training</a></li>
+  <li><a href="#theta-sweep-test" id="toc-theta-sweep-test" class="nav-link" data-scroll-target="#theta-sweep-test">Theta Sweep Test</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./model.html">Methods</a></li><li class="breadcrumb-item"><a href="./training.html">Training</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./evaluation.html">Theta Sweep</a></li><li class="breadcrumb-item"><a href="./experiment2.html">Experiment 2: Variable θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./experiment2.html">Experiment 2: Variable θ, Constant Sequence Length</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Training</h1>
+<h1 class="title">Experiment 2: Variable θ, Constant Sequence Length</h1>
 </div>
 
 
@@ -334,122 +340,18 @@ window.Quarto = {
 </header>
 
 
-<section id="objective" class="level2">
-<h2 class="anchored" data-anchor-id="objective">Objective</h2>
-<p>The model is trained with <strong>mean squared error (MSE)</strong> between predictions and ground-truth conditional moments at every timestep and every trajectory:</p>
-<p><span class="math display">\[
-\mathcal{L} = \frac{1}{N \cdot L \cdot K} \sum_{i=1}^{N} \sum_{t=1}^{L} \sum_{k=1}^{K} \left(\hat{y}^{(k)}_{i,t} - y^{(k)}_{i,t}\right)^2
-\]</span></p>
-<p>where <span class="math inline">\(\hat{y}^{(k)}_{i,t}\)</span> is the model’s prediction of cumulant <span class="math inline">\(k\)</span> for trajectory <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span>, and <span class="math inline">\(y^{(k)}_{i,t}\)</span> is the ground-truth value.</p>
-<p>Training on <strong>all timesteps</strong> simultaneously (not just the last) acts as a form of data augmentation and encourages the model to learn useful representations at all context lengths.</p>
+<section id="training" class="level2">
+<h2 class="anchored" data-anchor-id="training">Training</h2>
+<p>The model was trained on trajectories sampled from a <strong>distribution of <span class="math inline">\(\theta\)</span> values</strong> with a constant sequence length of 100.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/data_gen.py</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/train.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="data-loading" class="level2">
-<h2 class="anchored" data-anchor-id="data-loading">Data Loading</h2>
-<p>The dataset is split 80/20 into training and validation sets (randomized split):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>train_size <span class="op">=</span> <span class="bu">int</span>(<span class="fl">0.8</span> <span class="op">*</span> <span class="bu">len</span>(dataset))</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>val_size   <span class="op">=</span> <span class="bu">len</span>(dataset) <span class="op">-</span> train_size</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>train_dataset, val_dataset <span class="op">=</span> random_split(dataset, [train_size, val_size])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Each batch contains <code>(trajectories, targets)</code> tensors of shape <code>(batch, seq_len, *)</code>.</p>
-</section>
-<section id="optimizer" class="level2">
-<h2 class="anchored" data-anchor-id="optimizer">Optimizer</h2>
-<ul>
-<li><strong>Optimizer:</strong> Adam with learning rate <span class="math inline">\(10^{-3}\)</span></li>
-<li><strong>Loss function:</strong> <code>nn.MSELoss()</code> (averages over all elements)</li>
-<li><strong>Epochs:</strong> 200</li>
-<li><strong>Batch size:</strong> 64</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># configs/train.yaml</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hyperparameters</span><span class="kw">:</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">batch_size</span><span class="kw">:</span><span class="at"> </span><span class="dv">64</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">learning_rate</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.001</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">epochs</span><span class="kw">:</span><span class="at"> </span><span class="dv">200</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span><span class="kw">:</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">device</span><span class="kw">:</span><span class="at"> </span><span class="st">"cpu"</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">paths</span><span class="kw">:</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">save_dir</span><span class="kw">:</span><span class="at"> </span><span class="st">"experiments"</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mgf_model_name</span><span class="kw">:</span><span class="at"> </span><span class="st">"model_mgf.pth"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="variable-sequence-length-training" class="level2">
-<h2 class="anchored" data-anchor-id="variable-sequence-length-training">Variable Sequence Length Training</h2>
-<p>An optional <strong>variable sequence length</strong> mode randomly truncates each batch during training, so the model is exposed to many different context lengths in a single epoch. This can improve generalization to short sequences.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Enable variable-length training with minimum context of 16 tokens</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/train.py <span class="at">--variable-seq-len</span> <span class="at">--min-seq-len</span> 16</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>At each training step, a random truncation amount is sampled uniformly:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># scripts/train.py</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>truncation <span class="op">=</span> torch.randint(<span class="dv">0</span>, max_truncation <span class="op">+</span> <span class="dv">1</span>, (<span class="dv">1</span>,)).item()</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>effective_len <span class="op">=</span> seq_len <span class="op">-</span> truncation</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>batch_X <span class="op">=</span> batch_X[:, :effective_len, :]</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>batch_Y <span class="op">=</span> batch_Y[:, :effective_len, :]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="checkpointing" class="level2">
-<h2 class="anchored" data-anchor-id="checkpointing">Checkpointing</h2>
-<p>The <strong>best model by validation loss</strong> is saved during training:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> avg_val_loss <span class="op">&lt;</span> best_val_loss:</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    best_val_loss <span class="op">=</span> avg_val_loss</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    torch.save({</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">'model_state_dict'</span>: model.state_dict(),</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">'train_losses'</span>:     train_losses,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'val_losses'</span>:       val_losses,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'best_val_loss'</span>:    best_val_loss,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">'epoch'</span>:            epoch <span class="op">+</span> <span class="dv">1</span>,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">'config'</span>:           cfg</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    }, model_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>After training, a separate <strong>loss history</strong> file is saved for easy plotting:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>torch.save({</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'train_losses'</span>:     train_losses,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'val_losses'</span>:       val_losses,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'epochs'</span>:           <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1</span>, <span class="bu">len</span>(train_losses) <span class="op">+</span> <span class="dv">1</span>)),</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'final_train_loss'</span>: train_losses[<span class="op">-</span><span class="dv">1</span>],</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'final_val_loss'</span>:   val_losses[<span class="op">-</span><span class="dv">1</span>],</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'best_val_loss'</span>:    best_val_loss</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>}, loss_history_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Saved artifacts:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 40%">
-<col style="width: 60%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>File</th>
-<th>Contents</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>experiments/model_mgf.pth</code></td>
-<td>Best checkpoint (weights + loss history + config)</td>
-</tr>
-<tr class="even">
-<td><code>experiments/loss_history.pt</code></td>
-<td>Full train/val loss curves</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="running-training" class="level2">
-<h2 class="anchored" data-anchor-id="running-training">Running Training</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standard training</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/train.py</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Variable sequence length (recommended for better generalization)</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/train.py <span class="at">--variable-seq-len</span> <span class="at">--min-seq-len</span> 16</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Training prints a table of train/val loss per epoch:</p>
-<pre><code>Epoch | Train Loss | Val Loss
-----------------------------------------
-    1 | 0.012345   | 0.013210
-    2 | 0.010234   | 0.011089
-  ...</code></pre>
-</section>
-<section id="experiment-tracking" class="level2">
-<h2 class="anchored" data-anchor-id="experiment-tracking">Experiment Tracking</h2>
-<p>An optional <strong>experiment ID</strong> can be set via the <code>EXPERIMENT_ID</code> environment variable or in <code>configs/train.yaml</code>. When set, all output artifacts are prefixed with the ID to avoid overwriting previous runs:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="va">EXPERIMENT_ID</span><span class="op">=</span>run_001 <span class="ex">python</span> scripts/train.py</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># saves: experiments/run_001_model_mgf.pth</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#        experiments/run_001_loss_history.pt</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="theta-sweep-test" class="level2">
+<h2 class="anchored" data-anchor-id="theta-sweep-test">Theta Sweep Test</h2>
+<p>After training, the model was evaluated over the same <span class="math inline">\((\theta, L)\)</span> grid as Experiment 1: 25 <span class="math inline">\(\theta\)</span> values × 9 sequence lengths (5 to 400 in steps of 50), with 5,000 replicates per cell.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/test.py <span class="at">--coef</span> 0  <span class="co"># conditional mean</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/test.py <span class="at">--coef</span> 1  <span class="co"># conditional variance</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>See <a href="./results2.html">Results</a> for analysis.</p>
 
 
 

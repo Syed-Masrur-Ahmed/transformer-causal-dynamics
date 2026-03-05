@@ -4,9 +4,10 @@
     "href": "experiment1.html",
     "title": "Experiment 1: Single θ, Constant Sequence Length",
     "section": "",
-    "text": "The model was trained on trajectories from a single fixed \\(\\theta\\) value with a constant sequence length.\npython scripts/data_gen.py\npython scripts/train.py",
+    "text": "The model was trained on trajectories from a single fixed \\(\\theta\\) value with a constant sequence length of 100.\npython scripts/data_gen.py\npython scripts/train.py",
     "crumbs": [
       "Experiments",
+      "Theta Sweep",
       "Experiment 1: Single θ, Constant Seq Len",
       "Experiment 1: Single θ, Constant Sequence Length"
     ]
@@ -16,9 +17,10 @@
     "href": "experiment1.html#training",
     "title": "Experiment 1: Single θ, Constant Sequence Length",
     "section": "",
-    "text": "The model was trained on trajectories from a single fixed \\(\\theta\\) value with a constant sequence length.\npython scripts/data_gen.py\npython scripts/train.py",
+    "text": "The model was trained on trajectories from a single fixed \\(\\theta\\) value with a constant sequence length of 100.\npython scripts/data_gen.py\npython scripts/train.py",
     "crumbs": [
       "Experiments",
+      "Theta Sweep",
       "Experiment 1: Single θ, Constant Seq Len",
       "Experiment 1: Single θ, Constant Sequence Length"
     ]
@@ -28,176 +30,283 @@
     "href": "experiment1.html#theta-sweep-test",
     "title": "Experiment 1: Single θ, Constant Sequence Length",
     "section": "Theta Sweep Test",
-    "text": "Theta Sweep Test\nAfter training, the model was evaluated over a \\((\\theta, L)\\) grid of 25 \\(\\theta\\) values × 9 sequence lengths (5 to 400 in steps of 50), with 5,000 replicates per cell.\npython scripts/test.py --coef 0  # conditional mean\npython scripts/test.py --coef 1  # conditional variance\nSee Evaluation for the test procedure and Results for analysis.",
+    "text": "Theta Sweep Test\nAfter training, the model was evaluated over a \\((\\theta, L)\\) grid of 25 \\(\\theta\\) values × 9 sequence lengths (5 to 400 in steps of 50), with 5,000 replicates per cell.\npython scripts/test.py --coef 0  # conditional mean\npython scripts/test.py --coef 1  # conditional variance\nSee Results for analysis.",
     "crumbs": [
       "Experiments",
+      "Theta Sweep",
       "Experiment 1: Single θ, Constant Seq Len",
       "Experiment 1: Single θ, Constant Sequence Length"
     ]
   },
   {
-    "objectID": "training.html",
-    "href": "training.html",
-    "title": "Training",
+    "objectID": "ou-process.html",
+    "href": "ou-process.html",
+    "title": "OU Process & Data Generation",
     "section": "",
-    "text": "The model is trained with mean squared error (MSE) between predictions and ground-truth conditional moments at every timestep and every trajectory:\n\\[\n\\mathcal{L} = \\frac{1}{N \\cdot L \\cdot K} \\sum_{i=1}^{N} \\sum_{t=1}^{L} \\sum_{k=1}^{K} \\left(\\hat{y}^{(k)}_{i,t} - y^{(k)}_{i,t}\\right)^2\n\\]\nwhere \\(\\hat{y}^{(k)}_{i,t}\\) is the model’s prediction of cumulant \\(k\\) for trajectory \\(i\\) at time \\(t\\), and \\(y^{(k)}_{i,t}\\) is the ground-truth value.\nTraining on all timesteps simultaneously (not just the last) acts as a form of data augmentation and encourages the model to learn useful representations at all context lengths.",
+    "text": "The Ornstein–Uhlenbeck (OU) process is a continuous-time stochastic process that mean-reverts toward a long-run level \\(\\mu\\):\n\\[\ndX_t = \\theta(\\mu - X_t)\\,dt + \\sigma\\,dW_t\n\\]\nwhere:\n\n\n\n\n\n\n\n\nSymbol\nMeaning\nDefault value\n\n\n\n\n\\(\\theta &gt; 0\\)\nMean-reversion speed\nlognormal-sampled per trajectory\n\n\n\\(\\mu\\)\nLong-run mean\n0.0\n\n\n\\(\\sigma\\)\nDiffusion coefficient\nderived from fixed marginal variance\n\n\n\\(W_t\\)\nStandard Brownian motion\n—\n\n\n\nBecause the OU process is a linear SDE, its one-step transition is exactly Gaussian:\n\\[\nX_{t+\\Delta t} \\mid X_t \\;\\sim\\; \\mathcal{N}\\!\\left(\\mu_{\\text{cond}},\\; \\sigma^2_{\\text{cond}}\\right)\n\\]\nwith\n\\[\n\\mu_{\\text{cond}}(X_t) = \\mu + (X_t - \\mu)\\,e^{-\\theta \\Delta t}\n\\]\n\\[\n\\sigma^2_{\\text{cond}} = \\frac{D}{\\theta}\\left(1 - e^{-2\\theta \\Delta t}\\right)\n\\]\nwhere \\(D = \\sigma^2/2\\) is the diffusion constant. These are the ground-truth targets the model is trained to predict.",
     "crumbs": [
-      "Methods",
-      "Training"
+      "Background",
+      "OU Process & Data Generation"
     ]
   },
   {
-    "objectID": "training.html#objective",
-    "href": "training.html#objective",
-    "title": "Training",
+    "objectID": "ou-process.html#the-ornsteinuhlenbeck-process",
+    "href": "ou-process.html#the-ornsteinuhlenbeck-process",
+    "title": "OU Process & Data Generation",
     "section": "",
-    "text": "The model is trained with mean squared error (MSE) between predictions and ground-truth conditional moments at every timestep and every trajectory:\n\\[\n\\mathcal{L} = \\frac{1}{N \\cdot L \\cdot K} \\sum_{i=1}^{N} \\sum_{t=1}^{L} \\sum_{k=1}^{K} \\left(\\hat{y}^{(k)}_{i,t} - y^{(k)}_{i,t}\\right)^2\n\\]\nwhere \\(\\hat{y}^{(k)}_{i,t}\\) is the model’s prediction of cumulant \\(k\\) for trajectory \\(i\\) at time \\(t\\), and \\(y^{(k)}_{i,t}\\) is the ground-truth value.\nTraining on all timesteps simultaneously (not just the last) acts as a form of data augmentation and encourages the model to learn useful representations at all context lengths.",
+    "text": "The Ornstein–Uhlenbeck (OU) process is a continuous-time stochastic process that mean-reverts toward a long-run level \\(\\mu\\):\n\\[\ndX_t = \\theta(\\mu - X_t)\\,dt + \\sigma\\,dW_t\n\\]\nwhere:\n\n\n\n\n\n\n\n\nSymbol\nMeaning\nDefault value\n\n\n\n\n\\(\\theta &gt; 0\\)\nMean-reversion speed\nlognormal-sampled per trajectory\n\n\n\\(\\mu\\)\nLong-run mean\n0.0\n\n\n\\(\\sigma\\)\nDiffusion coefficient\nderived from fixed marginal variance\n\n\n\\(W_t\\)\nStandard Brownian motion\n—\n\n\n\nBecause the OU process is a linear SDE, its one-step transition is exactly Gaussian:\n\\[\nX_{t+\\Delta t} \\mid X_t \\;\\sim\\; \\mathcal{N}\\!\\left(\\mu_{\\text{cond}},\\; \\sigma^2_{\\text{cond}}\\right)\n\\]\nwith\n\\[\n\\mu_{\\text{cond}}(X_t) = \\mu + (X_t - \\mu)\\,e^{-\\theta \\Delta t}\n\\]\n\\[\n\\sigma^2_{\\text{cond}} = \\frac{D}{\\theta}\\left(1 - e^{-2\\theta \\Delta t}\\right)\n\\]\nwhere \\(D = \\sigma^2/2\\) is the diffusion constant. These are the ground-truth targets the model is trained to predict.",
     "crumbs": [
-      "Methods",
-      "Training"
+      "Background",
+      "OU Process & Data Generation"
     ]
   },
   {
-    "objectID": "training.html#data-loading",
-    "href": "training.html#data-loading",
-    "title": "Training",
-    "section": "Data Loading",
-    "text": "Data Loading\nThe dataset is split 80/20 into training and validation sets (randomized split):\ntrain_size = int(0.8 * len(dataset))\nval_size   = len(dataset) - train_size\ntrain_dataset, val_dataset = random_split(dataset, [train_size, val_size])\nEach batch contains (trajectories, targets) tensors of shape (batch, seq_len, *).",
+    "objectID": "ou-process.html#fixed-marginal-variance-design",
+    "href": "ou-process.html#fixed-marginal-variance-design",
+    "title": "OU Process & Data Generation",
+    "section": "Fixed Marginal Variance Design",
+    "text": "Fixed Marginal Variance Design\nA key design choice is to keep the marginal (stationary) variance constant across all trajectories:\n\\[\n\\text{Var}[X_\\infty] = \\frac{D}{\\theta} = \\text{const.}\n\\]\nThis means \\(D = \\text{const.} \\times \\theta\\), so \\(\\sigma\\) is not independently sampled — it is tied to \\(\\theta\\).\nWhy this matters: the marginal variance controls the overall scale of the trajectory. By fixing it, all trajectories look the same at the level of marginal statistics; the only signal the transformer can use to infer \\(\\theta\\) is the autocorrelation structure of the time series.",
     "crumbs": [
-      "Methods",
-      "Training"
+      "Background",
+      "OU Process & Data Generation"
     ]
   },
   {
-    "objectID": "training.html#optimizer",
-    "href": "training.html#optimizer",
-    "title": "Training",
-    "section": "Optimizer",
-    "text": "Optimizer\n\nOptimizer: Adam with learning rate \\(10^{-3}\\)\nLoss function: nn.MSELoss() (averages over all elements)\nEpochs: 200\nBatch size: 64\n\n# configs/train.yaml\nhyperparameters:\n  batch_size: 64\n  learning_rate: 0.001\n  epochs: 200\n\nsystem:\n  device: \"cpu\"\n\npaths:\n  save_dir: \"experiments\"\n  mgf_model_name: \"model_mgf.pth\"",
+    "objectID": "ou-process.html#theta-sampling",
+    "href": "ou-process.html#theta-sampling",
+    "title": "OU Process & Data Generation",
+    "section": "Theta Sampling",
+    "text": "Theta Sampling\nEach trajectory in the dataset has its own \\(\\theta\\) value, drawn from a log-normal distribution:\n\\[\n\\log\\theta \\;\\sim\\; \\mathcal{N}(0,\\; 0.4^2)\n\\]\nThis ensures \\(\\theta &gt; 0\\) and produces a realistic spread of mean-reversion speeds. The log-normal parameterization avoids negative values and is natural for positive rate parameters.\n# configs/data.yaml\ntheta_sampling:\n  distribution: \"lognormal\"\n  mean: 0.0       # mean of log(θ)\n  sigma: 0.4      # std of log(θ)",
     "crumbs": [
-      "Methods",
-      "Training"
+      "Background",
+      "OU Process & Data Generation"
     ]
   },
   {
-    "objectID": "training.html#variable-sequence-length-training",
-    "href": "training.html#variable-sequence-length-training",
-    "title": "Training",
-    "section": "Variable Sequence Length Training",
-    "text": "Variable Sequence Length Training\nAn optional variable sequence length mode randomly truncates each batch during training, so the model is exposed to many different context lengths in a single epoch. This can improve generalization to short sequences.\n# Enable variable-length training with minimum context of 16 tokens\npython scripts/train.py --variable-seq-len --min-seq-len 16\nAt each training step, a random truncation amount is sampled uniformly:\n# scripts/train.py\ntruncation = torch.randint(0, max_truncation + 1, (1,)).item()\neffective_len = seq_len - truncation\nbatch_X = batch_X[:, :effective_len, :]\nbatch_Y = batch_Y[:, :effective_len, :]",
+    "objectID": "ou-process.html#exact-simulation",
+    "href": "ou-process.html#exact-simulation",
+    "title": "OU Process & Data Generation",
+    "section": "Exact Simulation",
+    "text": "Exact Simulation\nTrajectories are simulated using the exact conditional distribution (no Euler–Maruyama discretization error):\n# src/mgf_dataset.py\nexp_theta_dt = torch.exp(-theta_tensor * dt)\nsqrt_term = torch.sqrt(D / theta * (1 - torch.exp(-2 * theta * dt)))\nX[t] = X[t-1] * exp_theta_dt + mu * (1 - exp_theta_dt) + sqrt_term * dW\nAt each step \\(t\\), \\(\\text{d}W \\sim \\mathcal{N}(0, 1)\\) independently. This is exact because the OU transition kernel is Gaussian.",
     "crumbs": [
-      "Methods",
-      "Training"
+      "Background",
+      "OU Process & Data Generation"
     ]
   },
   {
-    "objectID": "training.html#checkpointing",
-    "href": "training.html#checkpointing",
-    "title": "Training",
-    "section": "Checkpointing",
-    "text": "Checkpointing\nThe best model by validation loss is saved during training:\nif avg_val_loss &lt; best_val_loss:\n    best_val_loss = avg_val_loss\n    torch.save({\n        'model_state_dict': model.state_dict(),\n        'train_losses':     train_losses,\n        'val_losses':       val_losses,\n        'best_val_loss':    best_val_loss,\n        'epoch':            epoch + 1,\n        'config':           cfg\n    }, model_path)\nAfter training, a separate loss history file is saved for easy plotting:\ntorch.save({\n    'train_losses':     train_losses,\n    'val_losses':       val_losses,\n    'epochs':           list(range(1, len(train_losses) + 1)),\n    'final_train_loss': train_losses[-1],\n    'final_val_loss':   val_losses[-1],\n    'best_val_loss':    best_val_loss\n}, loss_history_path)\nSaved artifacts:\n\n\n\n\n\n\n\nFile\nContents\n\n\n\n\nexperiments/model_mgf.pth\nBest checkpoint (weights + loss history + config)\n\n\nexperiments/loss_history.pt\nFull train/val loss curves",
+    "objectID": "ou-process.html#dataset-structure",
+    "href": "ou-process.html#dataset-structure",
+    "title": "OU Process & Data Generation",
+    "section": "Dataset Structure",
+    "text": "Dataset Structure\nThe create_mgf_dataset function (in src/mgf_dataset.py) returns:\n\n\n\nTensor\nShape\nDescription\n\n\n\n\ntrajectories\n(N, L, 1)\nObserved OU paths\n\n\ntheta_tensor\n(N,)\nPer-trajectory \\(\\theta\\) values\n\n\ntargets\n(N, L, K)\nPrediction targets at each timestep\n\n\n\nwhere \\(N\\) = number of trajectories, \\(L\\) = sequence length, \\(K\\) = number of MGF query points (= target.order in data.yaml, default 3).\n\nTargets\nThe target tensor has the following columns:\n\n\n\nIndex\nContent\nFormula\n\n\n\n\n0\nConditional mean\n\\(\\mu + (X_t - \\mu)\\,e^{-\\theta \\Delta t}\\)\n\n\n1\nConditional variance\n\\((D/\\theta)(1 - e^{-2\\theta\\Delta t})\\)\n\n\n2+\nZero (unused)\n—\n\n\n\nThe model is trained to predict all K outputs simultaneously via MSE.",
     "crumbs": [
-      "Methods",
-      "Training"
+      "Background",
+      "OU Process & Data Generation"
     ]
   },
   {
-    "objectID": "training.html#running-training",
-    "href": "training.html#running-training",
-    "title": "Training",
-    "section": "Running Training",
-    "text": "Running Training\n# Standard training\npython scripts/train.py\n\n# Variable sequence length (recommended for better generalization)\npython scripts/train.py --variable-seq-len --min-seq-len 16\nTraining prints a table of train/val loss per epoch:\nEpoch | Train Loss | Val Loss\n----------------------------------------\n    1 | 0.012345   | 0.013210\n    2 | 0.010234   | 0.011089\n  ...",
+    "objectID": "ou-process.html#configuration",
+    "href": "ou-process.html#configuration",
+    "title": "OU Process & Data Generation",
+    "section": "Configuration",
+    "text": "Configuration\nAll dataset parameters live in configs/data.yaml:\nphysics:\n  theta: 0.15         # (unused — theta is sampled per trajectory)\n  mu: 0.0\n  sigma: 0.2          # (unused — sigma derived from marginal_variance)\n  dt: 0.1\n  marginal_variance: 0.2\n\ntheta_sampling:\n  distribution: \"lognormal\"\n  mean: 0.0\n  sigma: 0.4\n\nstructure:\n  num_trajectories: 1000\n  sequence_length: 500\n\ntarget:\n  order: 3            # number of output cumulants\n\ntraining:\n  train_split: 0.8\n  batch_size: 64\n\npaths:\n  mgf_data_path: \"data/ou_mgf.pt\"",
     "crumbs": [
-      "Methods",
-      "Training"
+      "Background",
+      "OU Process & Data Generation"
     ]
   },
   {
-    "objectID": "training.html#experiment-tracking",
-    "href": "training.html#experiment-tracking",
-    "title": "Training",
-    "section": "Experiment Tracking",
-    "text": "Experiment Tracking\nAn optional experiment ID can be set via the EXPERIMENT_ID environment variable or in configs/train.yaml. When set, all output artifacts are prefixed with the ID to avoid overwriting previous runs:\nEXPERIMENT_ID=run_001 python scripts/train.py\n# saves: experiments/run_001_model_mgf.pth\n#        experiments/run_001_loss_history.pt",
+    "objectID": "ou-process.html#saved-dataset-format",
+    "href": "ou-process.html#saved-dataset-format",
+    "title": "OU Process & Data Generation",
+    "section": "Saved Dataset Format",
+    "text": "Saved Dataset Format\npython scripts/data_gen.py saves a .pt file at data/ou_mgf.pt with the dictionary:\n{\n    'trajectories': torch.Tensor,   # (N, L, 1)\n    'targets':      torch.Tensor,   # (N, L, K)\n    'theta_values': torch.Tensor,   # (N,)\n    'config':       dict            # snapshot of configs at generation time\n}",
     "crumbs": [
-      "Methods",
-      "Training"
+      "Background",
+      "OU Process & Data Generation"
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Transformer Causal Dynamics",
+    "objectID": "evaluation.html",
+    "href": "evaluation.html",
+    "title": "Evaluation",
     "section": "",
-    "text": "This project investigates whether a transformer can learn to predict the conditional distribution of an Ornstein–Uhlenbeck (OU) process from a observed trajectory prefix, without being given the process parameters.\nThe key idea is to train the model to predict the log moment-generating function (MGF) of the next-step distribution at multiple query points. Because the log-MGF of a Gaussian is a parabola in the query variable \\(s\\), the model implicitly learns to extract the conditional mean and variance from context.",
+    "text": "The evaluation measures whether the trained model correctly predicts the conditional moments of the next-step OU distribution, as a function of two experimental variables:\n\n\\(\\theta\\) — the mean-reversion speed (the unknown parameter the model must infer)\n\\(L\\) — the sequence length (how much context the model has available)",
     "crumbs": [
-      "Getting Started",
-      "Transformer Causal Dynamics"
+      "Experiments",
+      "Theta Sweep",
+      "Evaluation"
     ]
   },
   {
-    "objectID": "index.html#overview",
-    "href": "index.html#overview",
-    "title": "Transformer Causal Dynamics",
+    "objectID": "evaluation.html#goal",
+    "href": "evaluation.html#goal",
+    "title": "Evaluation",
     "section": "",
-    "text": "This project investigates whether a transformer can learn to predict the conditional distribution of an Ornstein–Uhlenbeck (OU) process from a observed trajectory prefix, without being given the process parameters.\nThe key idea is to train the model to predict the log moment-generating function (MGF) of the next-step distribution at multiple query points. Because the log-MGF of a Gaussian is a parabola in the query variable \\(s\\), the model implicitly learns to extract the conditional mean and variance from context.",
+    "text": "The evaluation measures whether the trained model correctly predicts the conditional moments of the next-step OU distribution, as a function of two experimental variables:\n\n\\(\\theta\\) — the mean-reversion speed (the unknown parameter the model must infer)\n\\(L\\) — the sequence length (how much context the model has available)",
     "crumbs": [
-      "Getting Started",
-      "Transformer Causal Dynamics"
+      "Experiments",
+      "Theta Sweep",
+      "Evaluation"
     ]
   },
   {
-    "objectID": "index.html#research-question",
-    "href": "index.html#research-question",
-    "title": "Transformer Causal Dynamics",
-    "section": "Research Question",
-    "text": "Research Question\n\nCan a causally-masked transformer learn to identify OU process parameters (\\(\\theta\\), \\(\\sigma\\)) from a sequence of observations, and use this in-context information to predict the next-step conditional distribution?",
+    "objectID": "evaluation.html#evaluation-script",
+    "href": "evaluation.html#evaluation-script",
+    "title": "Evaluation",
+    "section": "Evaluation Script",
+    "text": "Evaluation Script\nscripts/test.py runs a theta–sequence-length sweep: for each \\((\\theta, L)\\) pair it generates fresh trajectories, runs both a trained and an untrained model, and records prediction quality metrics.\n# Test conditional mean (output index 0)\npython scripts/test.py --coef 0\n\n# Test conditional variance (output index 1)\npython scripts/test.py --coef 1\n\n# Interactive prompt\npython scripts/test.py",
     "crumbs": [
-      "Getting Started",
-      "Transformer Causal Dynamics"
+      "Experiments",
+      "Theta Sweep",
+      "Evaluation"
     ]
   },
   {
-    "objectID": "index.html#key-contributions",
-    "href": "index.html#key-contributions",
-    "title": "Transformer Causal Dynamics",
-    "section": "Key Contributions",
-    "text": "Key Contributions\n\nMGF prediction target: Instead of predicting a single scalar, the model predicts \\(\\phi(s \\mid X_{1:t})\\) at a small grid of \\(s\\) values, encoding full distributional information.\nHermite embedding: Scalar inputs are lifted to a Hermite polynomial basis — a natural orthogonal basis for Gaussian-distributed inputs — before being fed to the transformer.\nFixed marginal variance: The dataset is constructed so that \\(\\text{Var}[X_\\infty] = D/\\theta\\) is constant across trajectories, ensuring the only variation the model must track is \\(\\theta\\) itself.\nPredictive testing: The trained model is evaluated over a grid of \\((\\theta, L)\\) values with bias–variance decomposition of the relative prediction error.",
+    "objectID": "evaluation.html#test-configuration",
+    "href": "evaluation.html#test-configuration",
+    "title": "Evaluation",
+    "section": "Test Configuration",
+    "text": "Test Configuration\nThe sweep parameters are defined in configs/test.yaml:\ntheta_sweeps:\n  num_replicates: 5000          # trajectories per (theta, L) cell\n  num_theta_values: 25          # number of theta grid points\n  sequence_length_min: 5\n  sequence_length_max: 400\n  sequence_length_step: 50\n  mu: 0.0\n  dt: 0.1\n  fixed_marginal_variance: 0.1\n  theta_min: 0.1\n  theta_max: 4.0\nThis produces \\(25 \\times 9 = 225\\) test conditions (25 \\(\\theta\\) values × 9 sequence lengths from 5 to 400 in steps of 50), each evaluated on 5,000 independent replicates.",
     "crumbs": [
-      "Getting Started",
-      "Transformer Causal Dynamics"
+      "Experiments",
+      "Theta Sweep",
+      "Evaluation"
     ]
   },
   {
-    "objectID": "index.html#project-structure",
-    "href": "index.html#project-structure",
-    "title": "Transformer Causal Dynamics",
-    "section": "Project Structure",
-    "text": "Project Structure\nconfigs/          YAML configuration files (data, model, training, test)\nscripts/          Entry-point scripts (data_gen, train, test)\nsrc/              Core library (model, dataset, utils)\nanalysis_notebooks/ Jupyter notebooks for visualization and analysis\ndata/             Generated datasets (.pt files)\nexperiments/      Model checkpoints and test results (.pth, .csv)\ndocs/             This documentation (Quarto)",
+    "objectID": "evaluation.html#mgf-coefficients",
+    "href": "evaluation.html#mgf-coefficients",
+    "title": "Evaluation",
+    "section": "MGF Coefficients",
+    "text": "MGF Coefficients\nThe three output channels of the model correspond to:\n\n\n\nIndex\nName\nGround Truth\n\n\n\n\n0\nConditional mean\n\\(\\mu + (X_t - \\mu)\\,e^{-\\theta\\Delta t}\\)\n\n\n1\nConditional variance\n\\((D/\\theta)(1 - e^{-2\\theta\\Delta t})\\)\n\n\n2\nZero\n\\(0\\)\n\n\n\nEach can be tested independently with --coef 0, --coef 1, or --coef 2.",
     "crumbs": [
-      "Getting Started",
-      "Transformer Causal Dynamics"
+      "Experiments",
+      "Theta Sweep",
+      "Evaluation"
     ]
   },
   {
-    "objectID": "index.html#quickstart",
-    "href": "index.html#quickstart",
-    "title": "Transformer Causal Dynamics",
-    "section": "Quickstart",
-    "text": "Quickstart\n# 1. Create and activate environment\npython3 -m venv venv\nsource venv/bin/activate\npip install -r requirements.txt\n\n# 2. Generate training data\npython scripts/data_gen.py\n\n# 3. Train the model\npython scripts/train.py\n\n# 4. Run predictive tests (conditional mean)\npython scripts/test.py --coef 0\n\n# 5. Explore results in notebooks\njupyter notebook analysis_notebooks/results.ipynb",
+    "objectID": "evaluation.html#error-decomposition",
+    "href": "evaluation.html#error-decomposition",
+    "title": "Evaluation",
+    "section": "Error Decomposition",
+    "text": "Error Decomposition\nFor each \\((\\theta, L)\\) cell, the evaluation computes a bias–variance decomposition of the relative prediction error:\n\\[\n\\varepsilon_i = \\frac{\\hat{y}_i - y_i}{y_i}\n\\]\n\n\n\nMetric\nFormula\n\n\n\n\nSquared bias\n\\(\\left(\\mathbb{E}[\\varepsilon]\\right)^2\\)\n\n\nVariance\n\\(\\text{Var}[\\varepsilon]\\)\n\n\nTotal relative error\nSquared bias + Variance\n\n\n\n# scripts/test.py\nrel_err = (preds - truth) / denom\nsquared_bias = torch.mean(rel_err).item() ** 2\nvariance     = torch.var(rel_err, unbiased=False).item()\nrelative_error = squared_bias + variance\nA small numerical epsilon (\\(10^{-12}\\)) is added to the denominator to handle cases where the ground truth is zero (coefficient index 2).",
     "crumbs": [
-      "Getting Started",
-      "Transformer Causal Dynamics"
+      "Experiments",
+      "Theta Sweep",
+      "Evaluation"
     ]
   },
   {
-    "objectID": "index.html#dependencies",
-    "href": "index.html#dependencies",
-    "title": "Transformer Causal Dynamics",
-    "section": "Dependencies",
-    "text": "Dependencies\n\n\n\nPackage\nPurpose\n\n\n\n\ntorch\nModel, training, data tensors\n\n\nnumpy\nNumerical utilities\n\n\nmatplotlib / seaborn\nVisualization\n\n\npyyaml\nConfiguration loading\n\n\ntqdm\nProgress bars\n\n\nscikit-learn\nAuxiliary analysis\n\n\njupyter\nInteractive notebooks",
+    "objectID": "evaluation.html#baseline-comparison",
+    "href": "evaluation.html#baseline-comparison",
+    "title": "Evaluation",
+    "section": "Baseline Comparison",
+    "text": "Baseline Comparison\nEvery test condition is evaluated for both:\n\nTrained model — the best checkpoint from experiments/model_mgf.pth\nUntrained model — a randomly initialized model with identical architecture\n\nComparing trained vs. untrained isolates the effect of learning from the random-initialization prior.",
     "crumbs": [
-      "Getting Started",
-      "Transformer Causal Dynamics"
+      "Experiments",
+      "Theta Sweep",
+      "Evaluation"
+    ]
+  },
+  {
+    "objectID": "evaluation.html#output-format",
+    "href": "evaluation.html#output-format",
+    "title": "Evaluation",
+    "section": "Output Format",
+    "text": "Output Format\nResults are saved as a CSV in experiments/:\npredictive_test_results_coef0.csv   (conditional mean)\npredictive_test_results_coef1.csv   (conditional variance)\nEach row corresponds to one \\((\\theta, L)\\) cell:\n\n\n\nColumn\nDescription\n\n\n\n\nsweep_name\nName of the sweep configuration\n\n\nsequence_length\nContext length \\(L\\)\n\n\ntheta\nMean-reversion speed \\(\\theta\\)\n\n\ntrained_squared_bias\nSquared bias of trained model\n\n\ntrained_variance\nVariance of trained model errors\n\n\ntrained_relative_error\nTotal relative error (trained)\n\n\nuntrained_squared_bias\nSquared bias of untrained model\n\n\nuntrained_variance\nVariance of untrained model errors\n\n\nuntrained_relative_error\nTotal relative error (untrained)\n\n\nnum_replicates\nNumber of trajectories in this cell",
+    "crumbs": [
+      "Experiments",
+      "Theta Sweep",
+      "Evaluation"
+    ]
+  },
+  {
+    "objectID": "evaluation.html#notebook-analysis",
+    "href": "evaluation.html#notebook-analysis",
+    "title": "Evaluation",
+    "section": "Notebook Analysis",
+    "text": "Notebook Analysis\nThe analysis_notebooks/analysis.ipynb notebook provides interactive exploration:\n\nLoad the trained and untrained models\nVisualize the loss curves\nGenerate a test dataset with varying \\(\\theta\\)\nPlot prediction error vs. \\(\\theta\\) for both models\nInspect attention maps from each layer",
+    "crumbs": [
+      "Experiments",
+      "Theta Sweep",
+      "Evaluation"
+    ]
+  },
+  {
+    "objectID": "results.html",
+    "href": "results.html",
+    "title": "Results",
+    "section": "",
+    "text": "Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs. untrained model.",
+    "crumbs": [
+      "Experiments",
+      "Experiment 1: Single θ, Constant Seq Len",
+      "Results"
+    ]
+  },
+  {
+    "objectID": "results.html#conditional-mean-prediction",
+    "href": "results.html#conditional-mean-prediction",
+    "title": "Results",
+    "section": "",
+    "text": "Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs. untrained model.",
+    "crumbs": [
+      "Experiments",
+      "Experiment 1: Single θ, Constant Seq Len",
+      "Results"
+    ]
+  },
+  {
+    "objectID": "results.html#conditional-variance-prediction",
+    "href": "results.html#conditional-variance-prediction",
+    "title": "Results",
+    "section": "Conditional Variance Prediction",
+    "text": "Conditional Variance Prediction\n\n\n\nTheta sweep results for conditional variance prediction (coef 1). Relative error across θ and sequence length for trained vs. untrained model.",
+    "crumbs": [
+      "Experiments",
+      "Experiment 1: Single θ, Constant Seq Len",
+      "Results"
+    ]
+  },
+  {
+    "objectID": "results2.html",
+    "href": "results2.html",
+    "title": "Results",
+    "section": "",
+    "text": "Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs. untrained model.",
+    "crumbs": [
+      "Experiments",
+      "Theta Sweep",
+      "Experiment 2: Variable θ, Constant Seq Len",
+      "Results"
+    ]
+  },
+  {
+    "objectID": "results2.html#conditional-mean-prediction",
+    "href": "results2.html#conditional-mean-prediction",
+    "title": "Results",
+    "section": "",
+    "text": "Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs. untrained model.",
+    "crumbs": [
+      "Experiments",
+      "Theta Sweep",
+      "Experiment 2: Variable θ, Constant Seq Len",
+      "Results"
+    ]
+  },
+  {
+    "objectID": "results2.html#conditional-variance-prediction",
+    "href": "results2.html#conditional-variance-prediction",
+    "title": "Results",
+    "section": "Conditional Variance Prediction",
+    "text": "Conditional Variance Prediction\n\n\n\nTheta sweep results for conditional variance prediction (coef 1). Relative error across θ and sequence length for trained vs. untrained model.",
+    "crumbs": [
+      "Experiments",
+      "Theta Sweep",
+      "Experiment 2: Variable θ, Constant Seq Len",
+      "Results"
     ]
   },
   {
@@ -322,235 +431,207 @@
     ]
   },
   {
-    "objectID": "results.html",
-    "href": "results.html",
-    "title": "Results",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Transformer Causal Dynamics",
     "section": "",
-    "text": "Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs. untrained model.",
+    "text": "This project investigates whether a transformer can learn to predict the conditional distribution of an Ornstein–Uhlenbeck (OU) process from a observed trajectory prefix, without being given the process parameters.\nThe key idea is to train the model to predict the log moment-generating function (MGF) of the next-step distribution at multiple query points. Because the log-MGF of a Gaussian is a parabola in the query variable \\(s\\), the model implicitly learns to extract the conditional mean and variance from context.",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Results"
+      "Getting Started",
+      "Transformer Causal Dynamics"
     ]
   },
   {
-    "objectID": "results.html#conditional-mean-prediction",
-    "href": "results.html#conditional-mean-prediction",
-    "title": "Results",
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "Transformer Causal Dynamics",
     "section": "",
-    "text": "Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs. untrained model.",
+    "text": "This project investigates whether a transformer can learn to predict the conditional distribution of an Ornstein–Uhlenbeck (OU) process from a observed trajectory prefix, without being given the process parameters.\nThe key idea is to train the model to predict the log moment-generating function (MGF) of the next-step distribution at multiple query points. Because the log-MGF of a Gaussian is a parabola in the query variable \\(s\\), the model implicitly learns to extract the conditional mean and variance from context.",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Results"
+      "Getting Started",
+      "Transformer Causal Dynamics"
     ]
   },
   {
-    "objectID": "results.html#conditional-variance-prediction",
-    "href": "results.html#conditional-variance-prediction",
-    "title": "Results",
-    "section": "Conditional Variance Prediction",
-    "text": "Conditional Variance Prediction\n\n\n\nTheta sweep results for conditional variance prediction (coef 1). Relative error across θ and sequence length for trained vs. untrained model.",
+    "objectID": "index.html#research-question",
+    "href": "index.html#research-question",
+    "title": "Transformer Causal Dynamics",
+    "section": "Research Question",
+    "text": "Research Question\n\nCan a causally-masked transformer learn to identify OU process parameters (\\(\\theta\\), \\(\\sigma\\)) from a sequence of observations, and use this in-context information to predict the next-step conditional distribution?",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Results"
+      "Getting Started",
+      "Transformer Causal Dynamics"
     ]
   },
   {
-    "objectID": "evaluation.html",
-    "href": "evaluation.html",
-    "title": "Evaluation",
+    "objectID": "index.html#key-contributions",
+    "href": "index.html#key-contributions",
+    "title": "Transformer Causal Dynamics",
+    "section": "Key Contributions",
+    "text": "Key Contributions\n\nMGF prediction target: Instead of predicting a single scalar, the model predicts \\(\\phi(s \\mid X_{1:t})\\) at a small grid of \\(s\\) values, encoding full distributional information.\nHermite embedding: Scalar inputs are lifted to a Hermite polynomial basis — a natural orthogonal basis for Gaussian-distributed inputs — before being fed to the transformer.\nFixed marginal variance: The dataset is constructed so that \\(\\text{Var}[X_\\infty] = D/\\theta\\) is constant across trajectories, ensuring the only variation the model must track is \\(\\theta\\) itself.\nPredictive testing: The trained model is evaluated over a grid of \\((\\theta, L)\\) values with bias–variance decomposition of the relative prediction error.",
+    "crumbs": [
+      "Getting Started",
+      "Transformer Causal Dynamics"
+    ]
+  },
+  {
+    "objectID": "index.html#project-structure",
+    "href": "index.html#project-structure",
+    "title": "Transformer Causal Dynamics",
+    "section": "Project Structure",
+    "text": "Project Structure\nconfigs/          YAML configuration files (data, model, training, test)\nscripts/          Entry-point scripts (data_gen, train, test)\nsrc/              Core library (model, dataset, utils)\nanalysis_notebooks/ Jupyter notebooks for visualization and analysis\ndata/             Generated datasets (.pt files)\nexperiments/      Model checkpoints and test results (.pth, .csv)\ndocs/             This documentation (Quarto)",
+    "crumbs": [
+      "Getting Started",
+      "Transformer Causal Dynamics"
+    ]
+  },
+  {
+    "objectID": "index.html#quickstart",
+    "href": "index.html#quickstart",
+    "title": "Transformer Causal Dynamics",
+    "section": "Quickstart",
+    "text": "Quickstart\n# 1. Create and activate environment\npython3 -m venv venv\nsource venv/bin/activate\npip install -r requirements.txt\n\n# 2. Generate training data\npython scripts/data_gen.py\n\n# 3. Train the model\npython scripts/train.py\n\n# 4. Run predictive tests (conditional mean)\npython scripts/test.py --coef 0\n\n# 5. Explore results in notebooks\njupyter notebook analysis_notebooks/results.ipynb",
+    "crumbs": [
+      "Getting Started",
+      "Transformer Causal Dynamics"
+    ]
+  },
+  {
+    "objectID": "index.html#dependencies",
+    "href": "index.html#dependencies",
+    "title": "Transformer Causal Dynamics",
+    "section": "Dependencies",
+    "text": "Dependencies\n\n\n\nPackage\nPurpose\n\n\n\n\ntorch\nModel, training, data tensors\n\n\nnumpy\nNumerical utilities\n\n\nmatplotlib / seaborn\nVisualization\n\n\npyyaml\nConfiguration loading\n\n\ntqdm\nProgress bars\n\n\nscikit-learn\nAuxiliary analysis\n\n\njupyter\nInteractive notebooks",
+    "crumbs": [
+      "Getting Started",
+      "Transformer Causal Dynamics"
+    ]
+  },
+  {
+    "objectID": "training.html",
+    "href": "training.html",
+    "title": "Training",
     "section": "",
-    "text": "The evaluation measures whether the trained model correctly predicts the conditional moments of the next-step OU distribution, as a function of two experimental variables:\n\n\\(\\theta\\) — the mean-reversion speed (the unknown parameter the model must infer)\n\\(L\\) — the sequence length (how much context the model has available)",
+    "text": "The model is trained with mean squared error (MSE) between predictions and ground-truth conditional moments at every timestep and every trajectory:\n\\[\n\\mathcal{L} = \\frac{1}{N \\cdot L \\cdot K} \\sum_{i=1}^{N} \\sum_{t=1}^{L} \\sum_{k=1}^{K} \\left(\\hat{y}^{(k)}_{i,t} - y^{(k)}_{i,t}\\right)^2\n\\]\nwhere \\(\\hat{y}^{(k)}_{i,t}\\) is the model’s prediction of cumulant \\(k\\) for trajectory \\(i\\) at time \\(t\\), and \\(y^{(k)}_{i,t}\\) is the ground-truth value.\nTraining on all timesteps simultaneously (not just the last) acts as a form of data augmentation and encourages the model to learn useful representations at all context lengths.",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Evaluation"
+      "Methods",
+      "Training"
     ]
   },
   {
-    "objectID": "evaluation.html#goal",
-    "href": "evaluation.html#goal",
-    "title": "Evaluation",
+    "objectID": "training.html#objective",
+    "href": "training.html#objective",
+    "title": "Training",
     "section": "",
-    "text": "The evaluation measures whether the trained model correctly predicts the conditional moments of the next-step OU distribution, as a function of two experimental variables:\n\n\\(\\theta\\) — the mean-reversion speed (the unknown parameter the model must infer)\n\\(L\\) — the sequence length (how much context the model has available)",
+    "text": "The model is trained with mean squared error (MSE) between predictions and ground-truth conditional moments at every timestep and every trajectory:\n\\[\n\\mathcal{L} = \\frac{1}{N \\cdot L \\cdot K} \\sum_{i=1}^{N} \\sum_{t=1}^{L} \\sum_{k=1}^{K} \\left(\\hat{y}^{(k)}_{i,t} - y^{(k)}_{i,t}\\right)^2\n\\]\nwhere \\(\\hat{y}^{(k)}_{i,t}\\) is the model’s prediction of cumulant \\(k\\) for trajectory \\(i\\) at time \\(t\\), and \\(y^{(k)}_{i,t}\\) is the ground-truth value.\nTraining on all timesteps simultaneously (not just the last) acts as a form of data augmentation and encourages the model to learn useful representations at all context lengths.",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Evaluation"
+      "Methods",
+      "Training"
     ]
   },
   {
-    "objectID": "evaluation.html#evaluation-script",
-    "href": "evaluation.html#evaluation-script",
-    "title": "Evaluation",
-    "section": "Evaluation Script",
-    "text": "Evaluation Script\nscripts/test.py runs a theta–sequence-length sweep: for each \\((\\theta, L)\\) pair it generates fresh trajectories, runs both a trained and an untrained model, and records prediction quality metrics.\n# Test conditional mean (output index 0)\npython scripts/test.py --coef 0\n\n# Test conditional variance (output index 1)\npython scripts/test.py --coef 1\n\n# Interactive prompt\npython scripts/test.py",
+    "objectID": "training.html#data-loading",
+    "href": "training.html#data-loading",
+    "title": "Training",
+    "section": "Data Loading",
+    "text": "Data Loading\nThe dataset is split 80/20 into training and validation sets (randomized split):\ntrain_size = int(0.8 * len(dataset))\nval_size   = len(dataset) - train_size\ntrain_dataset, val_dataset = random_split(dataset, [train_size, val_size])\nEach batch contains (trajectories, targets) tensors of shape (batch, seq_len, *).",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Evaluation"
+      "Methods",
+      "Training"
     ]
   },
   {
-    "objectID": "evaluation.html#test-configuration",
-    "href": "evaluation.html#test-configuration",
-    "title": "Evaluation",
-    "section": "Test Configuration",
-    "text": "Test Configuration\nThe sweep parameters are defined in configs/test.yaml:\ntheta_sweeps:\n  num_replicates: 5000          # trajectories per (theta, L) cell\n  num_theta_values: 25          # number of theta grid points\n  sequence_length_min: 5\n  sequence_length_max: 400\n  sequence_length_step: 50\n  mu: 0.0\n  dt: 0.1\n  fixed_marginal_variance: 0.1\n  theta_min: 0.1\n  theta_max: 4.0\nThis produces \\(25 \\times 9 = 225\\) test conditions (25 \\(\\theta\\) values × 9 sequence lengths from 5 to 400 in steps of 50), each evaluated on 5,000 independent replicates.",
+    "objectID": "training.html#optimizer",
+    "href": "training.html#optimizer",
+    "title": "Training",
+    "section": "Optimizer",
+    "text": "Optimizer\n\nOptimizer: Adam with learning rate \\(10^{-3}\\)\nLoss function: nn.MSELoss() (averages over all elements)\nEpochs: 200\nBatch size: 64\n\n# configs/train.yaml\nhyperparameters:\n  batch_size: 64\n  learning_rate: 0.001\n  epochs: 200\n\nsystem:\n  device: \"cpu\"\n\npaths:\n  save_dir: \"experiments\"\n  mgf_model_name: \"model_mgf.pth\"",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Evaluation"
+      "Methods",
+      "Training"
     ]
   },
   {
-    "objectID": "evaluation.html#mgf-coefficients",
-    "href": "evaluation.html#mgf-coefficients",
-    "title": "Evaluation",
-    "section": "MGF Coefficients",
-    "text": "MGF Coefficients\nThe three output channels of the model correspond to:\n\n\n\nIndex\nName\nGround Truth\n\n\n\n\n0\nConditional mean\n\\(\\mu + (X_t - \\mu)\\,e^{-\\theta\\Delta t}\\)\n\n\n1\nConditional variance\n\\((D/\\theta)(1 - e^{-2\\theta\\Delta t})\\)\n\n\n2\nZero\n\\(0\\)\n\n\n\nEach can be tested independently with --coef 0, --coef 1, or --coef 2.",
+    "objectID": "training.html#variable-sequence-length-training",
+    "href": "training.html#variable-sequence-length-training",
+    "title": "Training",
+    "section": "Variable Sequence Length Training",
+    "text": "Variable Sequence Length Training\nAn optional variable sequence length mode randomly truncates each batch during training, so the model is exposed to many different context lengths in a single epoch. This can improve generalization to short sequences.\n# Enable variable-length training with minimum context of 16 tokens\npython scripts/train.py --variable-seq-len --min-seq-len 16\nAt each training step, a random truncation amount is sampled uniformly:\n# scripts/train.py\ntruncation = torch.randint(0, max_truncation + 1, (1,)).item()\neffective_len = seq_len - truncation\nbatch_X = batch_X[:, :effective_len, :]\nbatch_Y = batch_Y[:, :effective_len, :]",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Evaluation"
+      "Methods",
+      "Training"
     ]
   },
   {
-    "objectID": "evaluation.html#error-decomposition",
-    "href": "evaluation.html#error-decomposition",
-    "title": "Evaluation",
-    "section": "Error Decomposition",
-    "text": "Error Decomposition\nFor each \\((\\theta, L)\\) cell, the evaluation computes a bias–variance decomposition of the relative prediction error:\n\\[\n\\varepsilon_i = \\frac{\\hat{y}_i - y_i}{y_i}\n\\]\n\n\n\nMetric\nFormula\n\n\n\n\nSquared bias\n\\(\\left(\\mathbb{E}[\\varepsilon]\\right)^2\\)\n\n\nVariance\n\\(\\text{Var}[\\varepsilon]\\)\n\n\nTotal relative error\nSquared bias + Variance\n\n\n\n# scripts/test.py\nrel_err = (preds - truth) / denom\nsquared_bias = torch.mean(rel_err).item() ** 2\nvariance     = torch.var(rel_err, unbiased=False).item()\nrelative_error = squared_bias + variance\nA small numerical epsilon (\\(10^{-12}\\)) is added to the denominator to handle cases where the ground truth is zero (coefficient index 2).",
+    "objectID": "training.html#checkpointing",
+    "href": "training.html#checkpointing",
+    "title": "Training",
+    "section": "Checkpointing",
+    "text": "Checkpointing\nThe best model by validation loss is saved during training:\nif avg_val_loss &lt; best_val_loss:\n    best_val_loss = avg_val_loss\n    torch.save({\n        'model_state_dict': model.state_dict(),\n        'train_losses':     train_losses,\n        'val_losses':       val_losses,\n        'best_val_loss':    best_val_loss,\n        'epoch':            epoch + 1,\n        'config':           cfg\n    }, model_path)\nAfter training, a separate loss history file is saved for easy plotting:\ntorch.save({\n    'train_losses':     train_losses,\n    'val_losses':       val_losses,\n    'epochs':           list(range(1, len(train_losses) + 1)),\n    'final_train_loss': train_losses[-1],\n    'final_val_loss':   val_losses[-1],\n    'best_val_loss':    best_val_loss\n}, loss_history_path)\nSaved artifacts:\n\n\n\n\n\n\n\nFile\nContents\n\n\n\n\nexperiments/model_mgf.pth\nBest checkpoint (weights + loss history + config)\n\n\nexperiments/loss_history.pt\nFull train/val loss curves",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Evaluation"
+      "Methods",
+      "Training"
     ]
   },
   {
-    "objectID": "evaluation.html#baseline-comparison",
-    "href": "evaluation.html#baseline-comparison",
-    "title": "Evaluation",
-    "section": "Baseline Comparison",
-    "text": "Baseline Comparison\nEvery test condition is evaluated for both:\n\nTrained model — the best checkpoint from experiments/model_mgf.pth\nUntrained model — a randomly initialized model with identical architecture\n\nComparing trained vs. untrained isolates the effect of learning from the random-initialization prior.",
+    "objectID": "training.html#running-training",
+    "href": "training.html#running-training",
+    "title": "Training",
+    "section": "Running Training",
+    "text": "Running Training\n# Standard training\npython scripts/train.py\n\n# Variable sequence length (recommended for better generalization)\npython scripts/train.py --variable-seq-len --min-seq-len 16\nTraining prints a table of train/val loss per epoch:\nEpoch | Train Loss | Val Loss\n----------------------------------------\n    1 | 0.012345   | 0.013210\n    2 | 0.010234   | 0.011089\n  ...",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Evaluation"
+      "Methods",
+      "Training"
     ]
   },
   {
-    "objectID": "evaluation.html#output-format",
-    "href": "evaluation.html#output-format",
-    "title": "Evaluation",
-    "section": "Output Format",
-    "text": "Output Format\nResults are saved as a CSV in experiments/:\npredictive_test_results_coef0.csv   (conditional mean)\npredictive_test_results_coef1.csv   (conditional variance)\nEach row corresponds to one \\((\\theta, L)\\) cell:\n\n\n\nColumn\nDescription\n\n\n\n\nsweep_name\nName of the sweep configuration\n\n\nsequence_length\nContext length \\(L\\)\n\n\ntheta\nMean-reversion speed \\(\\theta\\)\n\n\ntrained_squared_bias\nSquared bias of trained model\n\n\ntrained_variance\nVariance of trained model errors\n\n\ntrained_relative_error\nTotal relative error (trained)\n\n\nuntrained_squared_bias\nSquared bias of untrained model\n\n\nuntrained_variance\nVariance of untrained model errors\n\n\nuntrained_relative_error\nTotal relative error (untrained)\n\n\nnum_replicates\nNumber of trajectories in this cell",
+    "objectID": "training.html#experiment-tracking",
+    "href": "training.html#experiment-tracking",
+    "title": "Training",
+    "section": "Experiment Tracking",
+    "text": "Experiment Tracking\nAn optional experiment ID can be set via the EXPERIMENT_ID environment variable or in configs/train.yaml. When set, all output artifacts are prefixed with the ID to avoid overwriting previous runs:\nEXPERIMENT_ID=run_001 python scripts/train.py\n# saves: experiments/run_001_model_mgf.pth\n#        experiments/run_001_loss_history.pt",
     "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Evaluation"
+      "Methods",
+      "Training"
     ]
   },
   {
-    "objectID": "evaluation.html#notebook-analysis",
-    "href": "evaluation.html#notebook-analysis",
-    "title": "Evaluation",
-    "section": "Notebook Analysis",
-    "text": "Notebook Analysis\nThe analysis_notebooks/analysis.ipynb notebook provides interactive exploration:\n\nLoad the trained and untrained models\nVisualize the loss curves\nGenerate a test dataset with varying \\(\\theta\\)\nPlot prediction error vs. \\(\\theta\\) for both models\nInspect attention maps from each layer",
-    "crumbs": [
-      "Experiments",
-      "Experiment 1: Single θ, Constant Seq Len",
-      "Evaluation"
-    ]
-  },
-  {
-    "objectID": "ou-process.html",
-    "href": "ou-process.html",
-    "title": "OU Process & Data Generation",
+    "objectID": "experiment2.html",
+    "href": "experiment2.html",
+    "title": "Experiment 2: Variable θ, Constant Sequence Length",
     "section": "",
-    "text": "The Ornstein–Uhlenbeck (OU) process is a continuous-time stochastic process that mean-reverts toward a long-run level \\(\\mu\\):\n\\[\ndX_t = \\theta(\\mu - X_t)\\,dt + \\sigma\\,dW_t\n\\]\nwhere:\n\n\n\n\n\n\n\n\nSymbol\nMeaning\nDefault value\n\n\n\n\n\\(\\theta &gt; 0\\)\nMean-reversion speed\nlognormal-sampled per trajectory\n\n\n\\(\\mu\\)\nLong-run mean\n0.0\n\n\n\\(\\sigma\\)\nDiffusion coefficient\nderived from fixed marginal variance\n\n\n\\(W_t\\)\nStandard Brownian motion\n—\n\n\n\nBecause the OU process is a linear SDE, its one-step transition is exactly Gaussian:\n\\[\nX_{t+\\Delta t} \\mid X_t \\;\\sim\\; \\mathcal{N}\\!\\left(\\mu_{\\text{cond}},\\; \\sigma^2_{\\text{cond}}\\right)\n\\]\nwith\n\\[\n\\mu_{\\text{cond}}(X_t) = \\mu + (X_t - \\mu)\\,e^{-\\theta \\Delta t}\n\\]\n\\[\n\\sigma^2_{\\text{cond}} = \\frac{D}{\\theta}\\left(1 - e^{-2\\theta \\Delta t}\\right)\n\\]\nwhere \\(D = \\sigma^2/2\\) is the diffusion constant. These are the ground-truth targets the model is trained to predict.",
+    "text": "The model was trained on trajectories sampled from a distribution of \\(\\theta\\) values with a constant sequence length of 100.\npython scripts/data_gen.py\npython scripts/train.py",
     "crumbs": [
-      "Background",
-      "OU Process & Data Generation"
+      "Experiments",
+      "Theta Sweep",
+      "Experiment 2: Variable θ, Constant Seq Len",
+      "Experiment 2: Variable θ, Constant Sequence Length"
     ]
   },
   {
-    "objectID": "ou-process.html#the-ornsteinuhlenbeck-process",
-    "href": "ou-process.html#the-ornsteinuhlenbeck-process",
-    "title": "OU Process & Data Generation",
+    "objectID": "experiment2.html#training",
+    "href": "experiment2.html#training",
+    "title": "Experiment 2: Variable θ, Constant Sequence Length",
     "section": "",
-    "text": "The Ornstein–Uhlenbeck (OU) process is a continuous-time stochastic process that mean-reverts toward a long-run level \\(\\mu\\):\n\\[\ndX_t = \\theta(\\mu - X_t)\\,dt + \\sigma\\,dW_t\n\\]\nwhere:\n\n\n\n\n\n\n\n\nSymbol\nMeaning\nDefault value\n\n\n\n\n\\(\\theta &gt; 0\\)\nMean-reversion speed\nlognormal-sampled per trajectory\n\n\n\\(\\mu\\)\nLong-run mean\n0.0\n\n\n\\(\\sigma\\)\nDiffusion coefficient\nderived from fixed marginal variance\n\n\n\\(W_t\\)\nStandard Brownian motion\n—\n\n\n\nBecause the OU process is a linear SDE, its one-step transition is exactly Gaussian:\n\\[\nX_{t+\\Delta t} \\mid X_t \\;\\sim\\; \\mathcal{N}\\!\\left(\\mu_{\\text{cond}},\\; \\sigma^2_{\\text{cond}}\\right)\n\\]\nwith\n\\[\n\\mu_{\\text{cond}}(X_t) = \\mu + (X_t - \\mu)\\,e^{-\\theta \\Delta t}\n\\]\n\\[\n\\sigma^2_{\\text{cond}} = \\frac{D}{\\theta}\\left(1 - e^{-2\\theta \\Delta t}\\right)\n\\]\nwhere \\(D = \\sigma^2/2\\) is the diffusion constant. These are the ground-truth targets the model is trained to predict.",
+    "text": "The model was trained on trajectories sampled from a distribution of \\(\\theta\\) values with a constant sequence length of 100.\npython scripts/data_gen.py\npython scripts/train.py",
     "crumbs": [
-      "Background",
-      "OU Process & Data Generation"
+      "Experiments",
+      "Theta Sweep",
+      "Experiment 2: Variable θ, Constant Seq Len",
+      "Experiment 2: Variable θ, Constant Sequence Length"
     ]
   },
   {
-    "objectID": "ou-process.html#fixed-marginal-variance-design",
-    "href": "ou-process.html#fixed-marginal-variance-design",
-    "title": "OU Process & Data Generation",
-    "section": "Fixed Marginal Variance Design",
-    "text": "Fixed Marginal Variance Design\nA key design choice is to keep the marginal (stationary) variance constant across all trajectories:\n\\[\n\\text{Var}[X_\\infty] = \\frac{D}{\\theta} = \\text{const.}\n\\]\nThis means \\(D = \\text{const.} \\times \\theta\\), so \\(\\sigma\\) is not independently sampled — it is tied to \\(\\theta\\).\nWhy this matters: the marginal variance controls the overall scale of the trajectory. By fixing it, all trajectories look the same at the level of marginal statistics; the only signal the transformer can use to infer \\(\\theta\\) is the autocorrelation structure of the time series.",
+    "objectID": "experiment2.html#theta-sweep-test",
+    "href": "experiment2.html#theta-sweep-test",
+    "title": "Experiment 2: Variable θ, Constant Sequence Length",
+    "section": "Theta Sweep Test",
+    "text": "Theta Sweep Test\nAfter training, the model was evaluated over the same \\((\\theta, L)\\) grid as Experiment 1: 25 \\(\\theta\\) values × 9 sequence lengths (5 to 400 in steps of 50), with 5,000 replicates per cell.\npython scripts/test.py --coef 0  # conditional mean\npython scripts/test.py --coef 1  # conditional variance\nSee Results for analysis.",
     "crumbs": [
-      "Background",
-      "OU Process & Data Generation"
-    ]
-  },
-  {
-    "objectID": "ou-process.html#theta-sampling",
-    "href": "ou-process.html#theta-sampling",
-    "title": "OU Process & Data Generation",
-    "section": "Theta Sampling",
-    "text": "Theta Sampling\nEach trajectory in the dataset has its own \\(\\theta\\) value, drawn from a log-normal distribution:\n\\[\n\\log\\theta \\;\\sim\\; \\mathcal{N}(0,\\; 0.4^2)\n\\]\nThis ensures \\(\\theta &gt; 0\\) and produces a realistic spread of mean-reversion speeds. The log-normal parameterization avoids negative values and is natural for positive rate parameters.\n# configs/data.yaml\ntheta_sampling:\n  distribution: \"lognormal\"\n  mean: 0.0       # mean of log(θ)\n  sigma: 0.4      # std of log(θ)",
-    "crumbs": [
-      "Background",
-      "OU Process & Data Generation"
-    ]
-  },
-  {
-    "objectID": "ou-process.html#exact-simulation",
-    "href": "ou-process.html#exact-simulation",
-    "title": "OU Process & Data Generation",
-    "section": "Exact Simulation",
-    "text": "Exact Simulation\nTrajectories are simulated using the exact conditional distribution (no Euler–Maruyama discretization error):\n# src/mgf_dataset.py\nexp_theta_dt = torch.exp(-theta_tensor * dt)\nsqrt_term = torch.sqrt(D / theta * (1 - torch.exp(-2 * theta * dt)))\nX[t] = X[t-1] * exp_theta_dt + mu * (1 - exp_theta_dt) + sqrt_term * dW\nAt each step \\(t\\), \\(\\text{d}W \\sim \\mathcal{N}(0, 1)\\) independently. This is exact because the OU transition kernel is Gaussian.",
-    "crumbs": [
-      "Background",
-      "OU Process & Data Generation"
-    ]
-  },
-  {
-    "objectID": "ou-process.html#dataset-structure",
-    "href": "ou-process.html#dataset-structure",
-    "title": "OU Process & Data Generation",
-    "section": "Dataset Structure",
-    "text": "Dataset Structure\nThe create_mgf_dataset function (in src/mgf_dataset.py) returns:\n\n\n\nTensor\nShape\nDescription\n\n\n\n\ntrajectories\n(N, L, 1)\nObserved OU paths\n\n\ntheta_tensor\n(N,)\nPer-trajectory \\(\\theta\\) values\n\n\ntargets\n(N, L, K)\nPrediction targets at each timestep\n\n\n\nwhere \\(N\\) = number of trajectories, \\(L\\) = sequence length, \\(K\\) = number of MGF query points (= target.order in data.yaml, default 3).\n\nTargets\nThe target tensor has the following columns:\n\n\n\nIndex\nContent\nFormula\n\n\n\n\n0\nConditional mean\n\\(\\mu + (X_t - \\mu)\\,e^{-\\theta \\Delta t}\\)\n\n\n1\nConditional variance\n\\((D/\\theta)(1 - e^{-2\\theta\\Delta t})\\)\n\n\n2+\nZero (unused)\n—\n\n\n\nThe model is trained to predict all K outputs simultaneously via MSE.",
-    "crumbs": [
-      "Background",
-      "OU Process & Data Generation"
-    ]
-  },
-  {
-    "objectID": "ou-process.html#configuration",
-    "href": "ou-process.html#configuration",
-    "title": "OU Process & Data Generation",
-    "section": "Configuration",
-    "text": "Configuration\nAll dataset parameters live in configs/data.yaml:\nphysics:\n  theta: 0.15         # (unused — theta is sampled per trajectory)\n  mu: 0.0\n  sigma: 0.2          # (unused — sigma derived from marginal_variance)\n  dt: 0.1\n  marginal_variance: 0.2\n\ntheta_sampling:\n  distribution: \"lognormal\"\n  mean: 0.0\n  sigma: 0.4\n\nstructure:\n  num_trajectories: 1000\n  sequence_length: 500\n\ntarget:\n  order: 3            # number of output cumulants\n\ntraining:\n  train_split: 0.8\n  batch_size: 64\n\npaths:\n  mgf_data_path: \"data/ou_mgf.pt\"",
-    "crumbs": [
-      "Background",
-      "OU Process & Data Generation"
-    ]
-  },
-  {
-    "objectID": "ou-process.html#saved-dataset-format",
-    "href": "ou-process.html#saved-dataset-format",
-    "title": "OU Process & Data Generation",
-    "section": "Saved Dataset Format",
-    "text": "Saved Dataset Format\npython scripts/data_gen.py saves a .pt file at data/ou_mgf.pt with the dictionary:\n{\n    'trajectories': torch.Tensor,   # (N, L, 1)\n    'targets':      torch.Tensor,   # (N, L, K)\n    'theta_values': torch.Tensor,   # (N,)\n    'config':       dict            # snapshot of configs at generation time\n}",
-    "crumbs": [
-      "Background",
-      "OU Process & Data Generation"
+      "Experiments",
+      "Theta Sweep",
+      "Experiment 2: Variable θ, Constant Seq Len",
+      "Experiment 2: Variable θ, Constant Sequence Length"
     ]
   }
 ]

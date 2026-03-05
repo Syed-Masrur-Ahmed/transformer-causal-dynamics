@@ -1,0 +1,13 @@
+---
+title: "Results"
+---
+
+## Conditional Mean Prediction
+
+![Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs. untrained model.](images/variable_theta_constant_len_mean.svg)
+
+---
+
+## Conditional Variance Prediction
+
+![Theta sweep results for conditional variance prediction (coef 1). Relative error across θ and sequence length for trained vs. untrained model.](images/variable_theta_constant_len_variance.svg)

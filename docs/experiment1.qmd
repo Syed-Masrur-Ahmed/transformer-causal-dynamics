@@ -4,7 +4,7 @@ title: "Experiment 1: Single θ, Constant Sequence Length"
 
 ## Training
 
-The model was trained on trajectories from a single fixed $\theta$ value with a constant sequence length.
+The model was trained on trajectories from a single fixed $\theta$ value with a constant sequence length of 100.
 
 ```bash
 python scripts/data_gen.py
@@ -20,4 +20,4 @@ python scripts/test.py --coef 0  # conditional mean
 python scripts/test.py --coef 1  # conditional variance
 ```
 
-See [Evaluation](evaluation.qmd) for the test procedure and [Results](results.qmd) for analysis.
+See [Results](results.qmd) for analysis.

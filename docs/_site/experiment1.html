@@ -147,7 +147,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Sequence Length</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./evaluation.html">Theta Sweep</a></li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Sequence Length</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -241,12 +241,27 @@ window.Quarto = {
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
- <span class="menu-text">Experiment 1: Single θ, Constant Seq Len</span></a>
+ <span class="menu-text">Theta Sweep</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./evaluation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Evaluation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Experiment 1: Single θ, Constant Seq Len</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth3 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./experiment1.html" class="sidebar-item-text sidebar-link active">
@@ -255,16 +270,35 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./evaluation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Evaluation</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./results.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Results</span></a>
   </div>
 </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Experiment 2: Variable θ, Constant Seq Len</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./experiment2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Experiment 2: Variable θ, Constant Sequence Length</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./results2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Results</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
       </ul>
   </li>
       </ul>
@@ -287,7 +321,7 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Sequence Length</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./evaluation.html">Theta Sweep</a></li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Sequence Length</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Experiment 1: Single θ, Constant Sequence Length</h1>
 </div>
@@ -308,7 +342,7 @@ window.Quarto = {
 
 <section id="training" class="level2">
 <h2 class="anchored" data-anchor-id="training">Training</h2>
-<p>The model was trained on trajectories from a single fixed <span class="math inline">\(\theta\)</span> value with a constant sequence length.</p>
+<p>The model was trained on trajectories from a single fixed <span class="math inline">\(\theta\)</span> value with a constant sequence length of 100.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/data_gen.py</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/train.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
@@ -317,7 +351,7 @@ window.Quarto = {
 <p>After training, the model was evaluated over a <span class="math inline">\((\theta, L)\)</span> grid of 25 <span class="math inline">\(\theta\)</span> values × 9 sequence lengths (5 to 400 in steps of 50), with 5,000 replicates per cell.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/test.py <span class="at">--coef</span> 0  <span class="co"># conditional mean</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/test.py <span class="at">--coef</span> 1  <span class="co"># conditional variance</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>See <a href="./evaluation.html">Evaluation</a> for the test procedure and <a href="./results.html">Results</a> for analysis.</p>
+<p>See <a href="./results.html">Results</a> for analysis.</p>
 
 
 
