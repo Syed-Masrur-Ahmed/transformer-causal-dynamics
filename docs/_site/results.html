@@ -112,7 +112,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./evaluation.html">Experiments</a></li><li class="breadcrumb-item"><a href="./results.html">Results</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./results.html">Results</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -203,6 +203,21 @@ window.Quarto = {
           </a> 
       </div>
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Experiment 1: Single θ, Constant Seq Len</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./experiment1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Experiment 1: Single θ, Constant Sequence Length</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./evaluation.html" class="sidebar-item-text sidebar-link">
@@ -217,6 +232,8 @@ window.Quarto = {
 </li>
       </ul>
   </li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -227,21 +244,15 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#training-curves" id="toc-training-curves" class="nav-link active" data-scroll-target="#training-curves">Training Curves</a></li>
-  <li><a href="#conditional-mean-prediction-coef-0" id="toc-conditional-mean-prediction-coef-0" class="nav-link" data-scroll-target="#conditional-mean-prediction-coef-0">Conditional Mean Prediction (<code>coef 0</code>)</a></li>
-  <li><a href="#conditional-variance-prediction-coef-1" id="toc-conditional-variance-prediction-coef-1" class="nav-link" data-scroll-target="#conditional-variance-prediction-coef-1">Conditional Variance Prediction (<code>coef 1</code>)</a></li>
-  <li><a href="#biasvariance-decomposition" id="toc-biasvariance-decomposition" class="nav-link" data-scroll-target="#biasvariance-decomposition">Bias–Variance Decomposition</a></li>
-  <li><a href="#trained-vs.-untrained-baseline" id="toc-trained-vs.-untrained-baseline" class="nav-link" data-scroll-target="#trained-vs.-untrained-baseline">Trained vs.&nbsp;Untrained Baseline</a></li>
-  <li><a href="#hermite-embedding-visualization" id="toc-hermite-embedding-visualization" class="nav-link" data-scroll-target="#hermite-embedding-visualization">Hermite Embedding Visualization</a></li>
-  <li><a href="#attention-maps" id="toc-attention-maps" class="nav-link" data-scroll-target="#attention-maps">Attention Maps</a></li>
-  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
+  <li><a href="#conditional-mean-prediction" id="toc-conditional-mean-prediction" class="nav-link active" data-scroll-target="#conditional-mean-prediction">Conditional Mean Prediction</a></li>
+  <li><a href="#conditional-variance-prediction" id="toc-conditional-variance-prediction" class="nav-link" data-scroll-target="#conditional-variance-prediction">Conditional Variance Prediction</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./evaluation.html">Experiments</a></li><li class="breadcrumb-item"><a href="./results.html">Results</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./results.html">Results</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Results</h1>
 </div>
@@ -260,116 +271,24 @@ window.Quarto = {
 </header>
 
 
-<!--
-  This page is a template for you to fill in with your experimental findings.
-  Add figures, tables, and commentary as you go.
-  Quarto supports including Python/R code chunks that produce plots inline.
--->
-<section id="training-curves" class="level2">
-<h2 class="anchored" data-anchor-id="training-curves">Training Curves</h2>
-<!--
-  Replace this section with your actual training plot.
-  Example Python chunk:
-
-::: {#9d6d78df .cell execution_count=1}
-``` {.python .cell-code}
-import torch
-import matplotlib.pyplot as plt
-
-h = torch.load('../experiments/loss_history.pt', weights_only=False)
-fig, ax = plt.subplots(figsize=(6, 3))
-ax.plot(h['epochs'], h['train_losses'], label='Train')
-ax.plot(h['epochs'], h['val_losses'],  label='Val')
-ax.set_xlabel('Epoch')
-ax.set_ylabel('MSE Loss')
-ax.legend()
-plt.tight_layout()
-plt.show()
-```
-
-::: {.cell-output .cell-output-display}
-![](results_files/figure-html/cell-2-output-1.png){width=566 height=278}
-:::
-:::
-
-
--->
-<p><em>Add training/validation loss curves here.</em></p>
+<section id="conditional-mean-prediction" class="level2">
+<h2 class="anchored" data-anchor-id="conditional-mean-prediction">Conditional Mean Prediction</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/single_theta_constant_len_mean.svg" class="img-fluid figure-img"></p>
+<figcaption>Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs.&nbsp;untrained model.</figcaption>
+</figure>
+</div>
 <hr>
 </section>
-<section id="conditional-mean-prediction-coef-0" class="level2">
-<h2 class="anchored" data-anchor-id="conditional-mean-prediction-coef-0">Conditional Mean Prediction (<code>coef 0</code>)</h2>
-<p>Results from <code>experiments/predictive_test_results_coef0.csv</code>.</p>
-<!--
-  Example: heatmap of trained_relative_error over (theta, sequence_length)
-
-::: {#ee74953c .cell execution_count=2}
-``` {.python .cell-code}
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
-df = pd.read_csv('../experiments/predictive_test_results_coef0.csv')
-pivot = df.pivot_table(index='theta', columns='sequence_length',
-                       values='trained_relative_error', aggfunc='mean')
-fig, ax = plt.subplots(figsize=(8, 5))
-im = ax.imshow(pivot.values, aspect='auto', origin='lower',
-               extent=[pivot.columns[0], pivot.columns[-1],
-                       pivot.index[0],   pivot.index[-1]])
-plt.colorbar(im, ax=ax, label='Relative Error')
-ax.set_xlabel('Sequence Length')
-ax.set_ylabel('θ')
-ax.set_title('Trained Model — Conditional Mean Relative Error')
-plt.tight_layout()
-plt.show()
-```
-
-::: {.cell-output .cell-output-display}
-![](results_files/figure-html/cell-3-output-1.png){width=746 height=470}
-:::
-:::
-
-
--->
-<p><em>Add conditional mean prediction results here.</em></p>
-<hr>
-</section>
-<section id="conditional-variance-prediction-coef-1" class="level2">
-<h2 class="anchored" data-anchor-id="conditional-variance-prediction-coef-1">Conditional Variance Prediction (<code>coef 1</code>)</h2>
-<p>Results from <code>experiments/predictive_test_results_coef1.csv</code>.</p>
-<p><em>Add conditional variance prediction results here.</em></p>
-<hr>
-</section>
-<section id="biasvariance-decomposition" class="level2">
-<h2 class="anchored" data-anchor-id="biasvariance-decomposition">Bias–Variance Decomposition</h2>
-<p><em>Discuss the relative contributions of squared bias and variance to the total error, and how they depend on <span class="math inline">\(\theta\)</span> and sequence length.</em></p>
-<hr>
-</section>
-<section id="trained-vs.-untrained-baseline" class="level2">
-<h2 class="anchored" data-anchor-id="trained-vs.-untrained-baseline">Trained vs.&nbsp;Untrained Baseline</h2>
-<p><em>Compare trained model error to the untrained baseline. Discuss what the improvement tells us about what was learned.</em></p>
-<hr>
-</section>
-<section id="hermite-embedding-visualization" class="level2">
-<h2 class="anchored" data-anchor-id="hermite-embedding-visualization">Hermite Embedding Visualization</h2>
-<p>See <code>analysis_notebooks/embedding_vis.ipynb</code> for plots of the Hermite basis functions and their behavior across the trajectory values.</p>
-<p><em>Add representative embedding plots here.</em></p>
-<hr>
-</section>
-<section id="attention-maps" class="level2">
-<h2 class="anchored" data-anchor-id="attention-maps">Attention Maps</h2>
-<p><em>Add attention weight visualizations from <code>analysis_notebooks/analysis.ipynb</code>.</em></p>
-<hr>
-</section>
-<section id="discussion" class="level2">
-<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
-<p><em>Summarize key findings. Consider:</em></p>
-<ul>
-<li><em>Does prediction error decrease monotonically with sequence length?</em></li>
-<li><em>For which values of <span class="math inline">\(\theta\)</span> is the model most/least accurate?</em></li>
-<li><em>Does the model generalize to <span class="math inline">\(\theta\)</span> values outside the training distribution?</em></li>
-<li><em>What is the relationship between attention patterns and <span class="math inline">\(\theta\)</span> estimation?</em></li>
-</ul>
+<section id="conditional-variance-prediction" class="level2">
+<h2 class="anchored" data-anchor-id="conditional-variance-prediction">Conditional Variance Prediction</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/single_theta_constant_len_variance.svg" class="img-fluid figure-img"></p>
+<figcaption>Theta sweep results for conditional variance prediction (coef 1). Relative error across θ and sequence length for trained vs.&nbsp;untrained model.</figcaption>
+</figure>
+</div>
 
 
 

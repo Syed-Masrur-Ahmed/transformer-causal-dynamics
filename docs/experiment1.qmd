@@ -1,0 +1,23 @@
+---
+title: "Experiment 1: Single θ, Constant Sequence Length"
+---
+
+## Training
+
+The model was trained on trajectories from a single fixed $\theta$ value with a constant sequence length.
+
+```bash
+python scripts/data_gen.py
+python scripts/train.py
+```
+
+## Theta Sweep Test
+
+After training, the model was evaluated over a $(\theta, L)$ grid of 25 $\theta$ values × 9 sequence lengths (5 to 400 in steps of 50), with 5,000 replicates per cell.
+
+```bash
+python scripts/test.py --coef 0  # conditional mean
+python scripts/test.py --coef 1  # conditional variance
+```
+
+See [Evaluation](evaluation.qmd) for the test procedure and [Results](results.qmd) for analysis.

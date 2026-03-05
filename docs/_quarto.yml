@@ -21,8 +21,11 @@ website:
           - training.qmd
       - section: "Experiments"
         contents:
-          - evaluation.qmd
-          - results.qmd
+          - section: "Experiment 1: Single θ, Constant Seq Len"
+            contents:
+              - experiment1.qmd
+              - evaluation.qmd
+              - results.qmd
 
 format:
   html:

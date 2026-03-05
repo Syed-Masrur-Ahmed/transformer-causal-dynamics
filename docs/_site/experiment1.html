@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>OU Process &amp; Data Generation – Transformer Causal Dynamics</title>
+<title>Experiment 1: Single θ, Constant Sequence Length – Transformer Causal Dynamics</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -147,7 +147,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ou-process.html">Background</a></li><li class="breadcrumb-item"><a href="./ou-process.html">OU Process &amp; Data Generation</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Sequence Length</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -200,7 +200,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ou-process.html" class="sidebar-item-text sidebar-link active">
+  <a href="./ou-process.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">OU Process &amp; Data Generation</span></a>
   </div>
 </li>
@@ -240,16 +240,16 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
  <span class="menu-text">Experiment 1: Single θ, Constant Seq Len</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./experiment1.html" class="sidebar-item-text sidebar-link">
+  <a href="./experiment1.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Experiment 1: Single θ, Constant Sequence Length</span></a>
   </div>
 </li>
@@ -279,25 +279,17 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#the-ornsteinuhlenbeck-process" id="toc-the-ornsteinuhlenbeck-process" class="nav-link active" data-scroll-target="#the-ornsteinuhlenbeck-process">The Ornstein–Uhlenbeck Process</a></li>
-  <li><a href="#fixed-marginal-variance-design" id="toc-fixed-marginal-variance-design" class="nav-link" data-scroll-target="#fixed-marginal-variance-design">Fixed Marginal Variance Design</a></li>
-  <li><a href="#theta-sampling" id="toc-theta-sampling" class="nav-link" data-scroll-target="#theta-sampling">Theta Sampling</a></li>
-  <li><a href="#exact-simulation" id="toc-exact-simulation" class="nav-link" data-scroll-target="#exact-simulation">Exact Simulation</a></li>
-  <li><a href="#dataset-structure" id="toc-dataset-structure" class="nav-link" data-scroll-target="#dataset-structure">Dataset Structure</a>
-  <ul class="collapse">
-  <li><a href="#targets" id="toc-targets" class="nav-link" data-scroll-target="#targets">Targets</a></li>
-  </ul></li>
-  <li><a href="#configuration" id="toc-configuration" class="nav-link" data-scroll-target="#configuration">Configuration</a></li>
-  <li><a href="#saved-dataset-format" id="toc-saved-dataset-format" class="nav-link" data-scroll-target="#saved-dataset-format">Saved Dataset Format</a></li>
+  <li><a href="#training" id="toc-training" class="nav-link active" data-scroll-target="#training">Training</a></li>
+  <li><a href="#theta-sweep-test" id="toc-theta-sweep-test" class="nav-link" data-scroll-target="#theta-sweep-test">Theta Sweep Test</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ou-process.html">Background</a></li><li class="breadcrumb-item"><a href="./ou-process.html">OU Process &amp; Data Generation</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Sequence Length</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">OU Process &amp; Data Generation</h1>
+<h1 class="title">Experiment 1: Single θ, Constant Sequence Length</h1>
 </div>
 
 
@@ -314,193 +306,18 @@ window.Quarto = {
 </header>
 
 
-<section id="the-ornsteinuhlenbeck-process" class="level2">
-<h2 class="anchored" data-anchor-id="the-ornsteinuhlenbeck-process">The Ornstein–Uhlenbeck Process</h2>
-<p>The <strong>Ornstein–Uhlenbeck (OU) process</strong> is a continuous-time stochastic process that mean-reverts toward a long-run level <span class="math inline">\(\mu\)</span>:</p>
-<p><span class="math display">\[
-dX_t = \theta(\mu - X_t)\,dt + \sigma\,dW_t
-\]</span></p>
-<p>where:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 29%">
-<col style="width: 45%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Symbol</th>
-<th>Meaning</th>
-<th>Default value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(\theta &gt; 0\)</span></td>
-<td>Mean-reversion speed</td>
-<td>lognormal-sampled per trajectory</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\mu\)</span></td>
-<td>Long-run mean</td>
-<td><code>0.0</code></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\sigma\)</span></td>
-<td>Diffusion coefficient</td>
-<td>derived from fixed marginal variance</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(W_t\)</span></td>
-<td>Standard Brownian motion</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p>Because the OU process is a linear SDE, its <strong>one-step transition is exactly Gaussian</strong>:</p>
-<p><span class="math display">\[
-X_{t+\Delta t} \mid X_t \;\sim\; \mathcal{N}\!\left(\mu_{\text{cond}},\; \sigma^2_{\text{cond}}\right)
-\]</span></p>
-<p>with</p>
-<p><span class="math display">\[
-\mu_{\text{cond}}(X_t) = \mu + (X_t - \mu)\,e^{-\theta \Delta t}
-\]</span></p>
-<p><span class="math display">\[
-\sigma^2_{\text{cond}} = \frac{D}{\theta}\left(1 - e^{-2\theta \Delta t}\right)
-\]</span></p>
-<p>where <span class="math inline">\(D = \sigma^2/2\)</span> is the diffusion constant. These are the <strong>ground-truth targets</strong> the model is trained to predict.</p>
+<section id="training" class="level2">
+<h2 class="anchored" data-anchor-id="training">Training</h2>
+<p>The model was trained on trajectories from a single fixed <span class="math inline">\(\theta\)</span> value with a constant sequence length.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/data_gen.py</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/train.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="fixed-marginal-variance-design" class="level2">
-<h2 class="anchored" data-anchor-id="fixed-marginal-variance-design">Fixed Marginal Variance Design</h2>
-<p>A key design choice is to keep the <strong>marginal (stationary) variance</strong> constant across all trajectories:</p>
-<p><span class="math display">\[
-\text{Var}[X_\infty] = \frac{D}{\theta} = \text{const.}
-\]</span></p>
-<p>This means <span class="math inline">\(D = \text{const.} \times \theta\)</span>, so <span class="math inline">\(\sigma\)</span> is not independently sampled — it is tied to <span class="math inline">\(\theta\)</span>.</p>
-<p><strong>Why this matters:</strong> the marginal variance controls the overall scale of the trajectory. By fixing it, all trajectories look the same at the level of marginal statistics; the only signal the transformer can use to infer <span class="math inline">\(\theta\)</span> is the <strong>autocorrelation structure</strong> of the time series.</p>
-</section>
-<section id="theta-sampling" class="level2">
-<h2 class="anchored" data-anchor-id="theta-sampling">Theta Sampling</h2>
-<p>Each trajectory in the dataset has its own <span class="math inline">\(\theta\)</span> value, drawn from a <strong>log-normal distribution</strong>:</p>
-<p><span class="math display">\[
-\log\theta \;\sim\; \mathcal{N}(0,\; 0.4^2)
-\]</span></p>
-<p>This ensures <span class="math inline">\(\theta &gt; 0\)</span> and produces a realistic spread of mean-reversion speeds. The log-normal parameterization avoids negative values and is natural for positive rate parameters.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># configs/data.yaml</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">theta_sampling</span><span class="kw">:</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">distribution</span><span class="kw">:</span><span class="at"> </span><span class="st">"lognormal"</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mean</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.0</span><span class="co">       # mean of log(θ)</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sigma</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.4</span><span class="co">      # std of log(θ)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="exact-simulation" class="level2">
-<h2 class="anchored" data-anchor-id="exact-simulation">Exact Simulation</h2>
-<p>Trajectories are simulated using the <strong>exact conditional distribution</strong> (no Euler–Maruyama discretization error):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># src/mgf_dataset.py</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>exp_theta_dt <span class="op">=</span> torch.exp(<span class="op">-</span>theta_tensor <span class="op">*</span> dt)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sqrt_term <span class="op">=</span> torch.sqrt(D <span class="op">/</span> theta <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> torch.exp(<span class="op">-</span><span class="dv">2</span> <span class="op">*</span> theta <span class="op">*</span> dt)))</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>X[t] <span class="op">=</span> X[t<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> exp_theta_dt <span class="op">+</span> mu <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> exp_theta_dt) <span class="op">+</span> sqrt_term <span class="op">*</span> dW</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>At each step <span class="math inline">\(t\)</span>, <span class="math inline">\(\text{d}W \sim \mathcal{N}(0, 1)\)</span> independently. This is exact because the OU transition kernel is Gaussian.</p>
-</section>
-<section id="dataset-structure" class="level2">
-<h2 class="anchored" data-anchor-id="dataset-structure">Dataset Structure</h2>
-<p>The <code>create_mgf_dataset</code> function (in <code>src/mgf_dataset.py</code>) returns:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Tensor</th>
-<th>Shape</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>trajectories</code></td>
-<td><code>(N, L, 1)</code></td>
-<td>Observed OU paths</td>
-</tr>
-<tr class="even">
-<td><code>theta_tensor</code></td>
-<td><code>(N,)</code></td>
-<td>Per-trajectory <span class="math inline">\(\theta\)</span> values</td>
-</tr>
-<tr class="odd">
-<td><code>targets</code></td>
-<td><code>(N, L, K)</code></td>
-<td>Prediction targets at each timestep</td>
-</tr>
-</tbody>
-</table>
-<p>where <span class="math inline">\(N\)</span> = number of trajectories, <span class="math inline">\(L\)</span> = sequence length, <span class="math inline">\(K\)</span> = number of MGF query points (= <code>target.order</code> in <code>data.yaml</code>, default 3).</p>
-<section id="targets" class="level3">
-<h3 class="anchored" data-anchor-id="targets">Targets</h3>
-<p>The target tensor has the following columns:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Index</th>
-<th>Content</th>
-<th>Formula</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>0</code></td>
-<td>Conditional mean</td>
-<td><span class="math inline">\(\mu + (X_t - \mu)\,e^{-\theta \Delta t}\)</span></td>
-</tr>
-<tr class="even">
-<td><code>1</code></td>
-<td>Conditional variance</td>
-<td><span class="math inline">\((D/\theta)(1 - e^{-2\theta\Delta t})\)</span></td>
-</tr>
-<tr class="odd">
-<td><code>2+</code></td>
-<td>Zero (unused)</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p>The model is trained to predict all <code>K</code> outputs simultaneously via MSE.</p>
-</section>
-</section>
-<section id="configuration" class="level2">
-<h2 class="anchored" data-anchor-id="configuration">Configuration</h2>
-<p>All dataset parameters live in <code>configs/data.yaml</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">physics</span><span class="kw">:</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">theta</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.15</span><span class="co">         # (unused — theta is sampled per trajectory)</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mu</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.0</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sigma</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.2</span><span class="co">          # (unused — sigma derived from marginal_variance)</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">dt</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.1</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">marginal_variance</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.2</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">theta_sampling</span><span class="kw">:</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">distribution</span><span class="kw">:</span><span class="at"> </span><span class="st">"lognormal"</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mean</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.0</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sigma</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.4</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">structure</span><span class="kw">:</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">num_trajectories</span><span class="kw">:</span><span class="at"> </span><span class="dv">1000</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sequence_length</span><span class="kw">:</span><span class="at"> </span><span class="dv">500</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">target</span><span class="kw">:</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">order</span><span class="kw">:</span><span class="at"> </span><span class="dv">3</span><span class="co">            # number of output cumulants</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">training</span><span class="kw">:</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">train_split</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.8</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">batch_size</span><span class="kw">:</span><span class="at"> </span><span class="dv">64</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="fu">paths</span><span class="kw">:</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mgf_data_path</span><span class="kw">:</span><span class="at"> </span><span class="st">"data/ou_mgf.pt"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="saved-dataset-format" class="level2">
-<h2 class="anchored" data-anchor-id="saved-dataset-format">Saved Dataset Format</h2>
-<p><code>python scripts/data_gen.py</code> saves a <code>.pt</code> file at <code>data/ou_mgf.pt</code> with the dictionary:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'trajectories'</span>: torch.Tensor,   <span class="co"># (N, L, 1)</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'targets'</span>:      torch.Tensor,   <span class="co"># (N, L, K)</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'theta_values'</span>: torch.Tensor,   <span class="co"># (N,)</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'config'</span>:       <span class="bu">dict</span>            <span class="co"># snapshot of configs at generation time</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="theta-sweep-test" class="level2">
+<h2 class="anchored" data-anchor-id="theta-sweep-test">Theta Sweep Test</h2>
+<p>After training, the model was evaluated over a <span class="math inline">\((\theta, L)\)</span> grid of 25 <span class="math inline">\(\theta\)</span> values × 9 sequence lengths (5 to 400 in steps of 50), with 5,000 replicates per cell.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/test.py <span class="at">--coef</span> 0  <span class="co"># conditional mean</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/test.py <span class="at">--coef</span> 1  <span class="co"># conditional variance</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>See <a href="./evaluation.html">Evaluation</a> for the test procedure and <a href="./results.html">Results</a> for analysis.</p>
 
 
 
