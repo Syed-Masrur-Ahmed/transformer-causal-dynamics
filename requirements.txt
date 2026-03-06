@@ -6,3 +6,4 @@ tqdm
 pyyaml
 seaborn
 scikit-learn
+quarto
