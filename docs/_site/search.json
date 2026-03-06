@@ -242,6 +242,7 @@
     "text": "Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs. untrained model.",
     "crumbs": [
       "Experiments",
+      "Theta Sweep",
       "Experiment 1: Single θ, Constant Seq Len",
       "Results"
     ]
@@ -254,6 +255,7 @@
     "text": "Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs. untrained model.",
     "crumbs": [
       "Experiments",
+      "Theta Sweep",
       "Experiment 1: Single θ, Constant Seq Len",
       "Results"
     ]
@@ -266,6 +268,7 @@
     "text": "Conditional Variance Prediction\n\n\n\nTheta sweep results for conditional variance prediction (coef 1). Relative error across θ and sequence length for trained vs. untrained model.",
     "crumbs": [
       "Experiments",
+      "Theta Sweep",
       "Experiment 1: Single θ, Constant Seq Len",
       "Results"
     ]
@@ -632,6 +635,109 @@
       "Theta Sweep",
       "Experiment 2: Variable θ, Constant Seq Len",
       "Experiment 2: Variable θ, Constant Sequence Length"
+    ]
+  },
+  {
+    "objectID": "experiment3.html",
+    "href": "experiment3.html",
+    "title": "Train θ vs Test θ Contour",
+    "section": "",
+    "text": "For each value of training \\(\\theta\\), a fresh model is trained on single-\\(\\theta\\) data, then evaluated across a range of test \\(\\theta\\) values. The result is a 2D grid of MSE values showing how well a model trained at one \\(\\theta\\) generalizes to others.",
+    "crumbs": [
+      "Experiments",
+      "Train θ vs Test θ Contour",
+      "Train θ vs Test θ Contour"
+    ]
+  },
+  {
+    "objectID": "experiment3.html#setup",
+    "href": "experiment3.html#setup",
+    "title": "Train θ vs Test θ Contour",
+    "section": "",
+    "text": "For each value of training \\(\\theta\\), a fresh model is trained on single-\\(\\theta\\) data, then evaluated across a range of test \\(\\theta\\) values. The result is a 2D grid of MSE values showing how well a model trained at one \\(\\theta\\) generalizes to others.",
+    "crumbs": [
+      "Experiments",
+      "Train θ vs Test θ Contour",
+      "Train θ vs Test θ Contour"
+    ]
+  },
+  {
+    "objectID": "experiment3.html#parameters",
+    "href": "experiment3.html#parameters",
+    "title": "Train θ vs Test θ Contour",
+    "section": "Parameters",
+    "text": "Parameters\n\n\n\nParameter\nValue\n\n\n\n\nTrain \\(\\theta\\) grid\n12 values, linearly spaced in \\([0.1, 4.0]\\)\n\n\nTest \\(\\theta\\) grid\n30 values, linearly spaced in \\([0.1, 4.0]\\)\n\n\nSequence length\n100\n\n\nTraining trajectories\n1000\n\n\nTest trajectories\n2000\n\n\nTrain/val split\n80/20\n\n\nEpochs\n150\n\n\nBatch size\n64\n\n\nLearning rate\n\\(10^{-3}\\)\n\n\nOptimizer\nAdam\n\n\nLoss\nMSE on conditional mean (coef 0) at last timestep\n\n\nMarginal variance\n0.2 (fixed across all trajectories)\n\n\n\\(\\mu\\)\n0.0\n\n\n\\(\\Delta t\\)\n0.1",
+    "crumbs": [
+      "Experiments",
+      "Train θ vs Test θ Contour",
+      "Train θ vs Test θ Contour"
+    ]
+  },
+  {
+    "objectID": "experiment3.html#results",
+    "href": "experiment3.html#results",
+    "title": "Train θ vs Test θ Contour",
+    "section": "Results",
+    "text": "Results\n\n\n\nMSE (log scale) of conditional mean prediction as a function of training \\(\\theta\\) (y-axis) and test \\(\\theta\\) (x-axis). The dashed diagonal marks where train \\(\\theta\\) equals test \\(\\theta\\).",
+    "crumbs": [
+      "Experiments",
+      "Train θ vs Test θ Contour",
+      "Train θ vs Test θ Contour"
+    ]
+  },
+  {
+    "objectID": "theta_sweep.html",
+    "href": "theta_sweep.html",
+    "title": "Theta Sweep",
+    "section": "",
+    "text": "The theta sweep measures whether the trained model correctly predicts the conditional moments of the next-step OU distribution across two variables:\n\n\\(\\theta\\) — the mean-reversion speed\n\\(L\\) — the sequence length (context available to the model)\n\nscripts/test.py generates fresh trajectories for each \\((\\theta, L)\\) pair, runs both a trained and an untrained model, and records prediction quality metrics.\npython scripts/test.py --coef 0  # conditional mean\npython scripts/test.py --coef 1  # conditional variance\nThe sweep covers \\(25 \\times 9 = 225\\) conditions (25 \\(\\theta\\) values × 9 sequence lengths from 5 to 400 in steps of 50), each evaluated on 5,000 independent replicates.\nFor each \\((\\theta, L)\\) cell, the evaluation computes a bias–variance decomposition of the relative prediction error:\n\\[\n\\varepsilon_i = \\frac{\\hat{y}_i - y_i}{y_i}\n\\]\n\n\n\nMetric\nFormula\n\n\n\n\nSquared bias\n\\(\\left(\\mathbb{E}[\\varepsilon]\\right)^2\\)\n\n\nVariance\n\\(\\text{Var}[\\varepsilon]\\)\n\n\nTotal relative error\nSquared bias + Variance\n\n\n\nEvery condition is compared against an untrained (randomly initialized) baseline to isolate the effect of learning.",
+    "crumbs": [
+      "Experiments",
+      "Theta Sweep"
+    ]
+  },
+  {
+    "objectID": "theta_sweep.html#evaluation",
+    "href": "theta_sweep.html#evaluation",
+    "title": "Theta Sweep",
+    "section": "",
+    "text": "The theta sweep measures whether the trained model correctly predicts the conditional moments of the next-step OU distribution across two variables:\n\n\\(\\theta\\) — the mean-reversion speed\n\\(L\\) — the sequence length (context available to the model)\n\nscripts/test.py generates fresh trajectories for each \\((\\theta, L)\\) pair, runs both a trained and an untrained model, and records prediction quality metrics.\npython scripts/test.py --coef 0  # conditional mean\npython scripts/test.py --coef 1  # conditional variance\nThe sweep covers \\(25 \\times 9 = 225\\) conditions (25 \\(\\theta\\) values × 9 sequence lengths from 5 to 400 in steps of 50), each evaluated on 5,000 independent replicates.\nFor each \\((\\theta, L)\\) cell, the evaluation computes a bias–variance decomposition of the relative prediction error:\n\\[\n\\varepsilon_i = \\frac{\\hat{y}_i - y_i}{y_i}\n\\]\n\n\n\nMetric\nFormula\n\n\n\n\nSquared bias\n\\(\\left(\\mathbb{E}[\\varepsilon]\\right)^2\\)\n\n\nVariance\n\\(\\text{Var}[\\varepsilon]\\)\n\n\nTotal relative error\nSquared bias + Variance\n\n\n\nEvery condition is compared against an untrained (randomly initialized) baseline to isolate the effect of learning.",
+    "crumbs": [
+      "Experiments",
+      "Theta Sweep"
+    ]
+  },
+  {
+    "objectID": "theta_sweep.html#experiment-1-single-θ-constant-sequence-length",
+    "href": "theta_sweep.html#experiment-1-single-θ-constant-sequence-length",
+    "title": "Theta Sweep",
+    "section": "Experiment 1: Single θ, Constant Sequence Length",
+    "text": "Experiment 1: Single θ, Constant Sequence Length\nThe model was trained on trajectories from a single fixed \\(\\theta\\) with a constant sequence length of 100.\npython scripts/data_gen.py\npython scripts/train.py\n\nConditional Mean\n\n\n\nConditional Variance",
+    "crumbs": [
+      "Experiments",
+      "Theta Sweep"
+    ]
+  },
+  {
+    "objectID": "theta_sweep.html#experiment-2-variable-θ-constant-sequence-length",
+    "href": "theta_sweep.html#experiment-2-variable-θ-constant-sequence-length",
+    "title": "Theta Sweep",
+    "section": "Experiment 2: Variable θ, Constant Sequence Length",
+    "text": "Experiment 2: Variable θ, Constant Sequence Length\nThe model was trained on trajectories sampled from a distribution of \\(\\theta\\) values with a constant sequence length of 100.\npython scripts/data_gen.py\npython scripts/train.py\n\nConditional Mean\n\n\n\nConditional Variance",
+    "crumbs": [
+      "Experiments",
+      "Theta Sweep"
+    ]
+  },
+  {
+    "objectID": "theta_sweep.html#experiment-3-train-θ-vs-test-θ-contour",
+    "href": "theta_sweep.html#experiment-3-train-θ-vs-test-θ-contour",
+    "title": "Theta Sweep",
+    "section": "Experiment 3: Train θ vs Test θ Contour",
+    "text": "Experiment 3: Train θ vs Test θ Contour\nFor each value of training \\(\\theta\\), a fresh model is trained on single-\\(\\theta\\) data, then evaluated across a range of test \\(\\theta\\) values. The result is a 2D grid of MSE values showing how well a model trained at one \\(\\theta\\) generalizes to others.\n\n\n\nParameter\nValue\n\n\n\n\nTrain \\(\\theta\\) grid\n12 values, linearly spaced in \\([0.1, 4.0]\\)\n\n\nTest \\(\\theta\\) grid\n30 values, linearly spaced in \\([0.1, 4.0]\\)\n\n\nSequence length\n100\n\n\nTraining trajectories\n1000\n\n\nTest trajectories\n2000\n\n\nTrain/val split\n80/20\n\n\nEpochs\n150\n\n\nBatch size\n64\n\n\nLearning rate\n\\(10^{-3}\\)\n\n\nOptimizer\nAdam\n\n\nLoss\nMSE on conditional mean (coef 0) at last timestep\n\n\nMarginal variance\n0.2 (fixed across all trajectories)\n\n\n\\(\\mu\\)\n0.0\n\n\n\\(\\Delta t\\)\n0.1\n\n\n\n\n\n\nMSE (log scale) of conditional mean prediction as a function of training \\(\\theta\\) (y-axis) and test \\(\\theta\\) (x-axis). The dashed diagonal marks where train \\(\\theta\\) equals test \\(\\theta\\).",
+    "crumbs": [
+      "Experiments",
+      "Theta Sweep"
     ]
   }
 ]

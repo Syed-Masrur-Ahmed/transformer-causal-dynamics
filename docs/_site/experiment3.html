@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Results – Transformer Causal Dynamics</title>
+<title>Train θ vs Test θ Contour – Transformer Causal Dynamics</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -112,7 +112,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./evaluation.html">Theta Sweep</a></li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./results.html">Results</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./theta_sweep.html">Experiments</a></li><li class="breadcrumb-item"><a href="./experiment3.html">Train θ vs Test θ Contour</a></li><li class="breadcrumb-item"><a href="./experiment3.html">Train θ vs Test θ Contour</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -203,10 +203,16 @@ window.Quarto = {
           </a> 
       </div>
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./theta_sweep.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Theta Sweep</span></a>
+  </div>
+</li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
- <span class="menu-text">Theta Sweep</span></a>
+ <span class="menu-text">Train θ vs Test θ Contour</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -214,70 +220,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./evaluation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Evaluation</span></a>
-  </div>
-</li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
- <span class="menu-text">Experiment 1: Single θ, Constant Seq Len</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth3 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./experiment1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Experiment 1: Single θ, Constant Sequence Length</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./results.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Results</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
- <span class="menu-text">Experiment 2: Variable θ, Constant Seq Len</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./experiment2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Experiment 2: Variable θ, Constant Sequence Length</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./results2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Results</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-      </ul>
-  </li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
- <span class="menu-text">Train θ vs Test θ Contour</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./experiment3.html" class="sidebar-item-text sidebar-link">
+  <a href="./experiment3.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Train θ vs Test θ Contour</span></a>
   </div>
 </li>
@@ -295,17 +238,18 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#conditional-mean-prediction" id="toc-conditional-mean-prediction" class="nav-link active" data-scroll-target="#conditional-mean-prediction">Conditional Mean Prediction</a></li>
-  <li><a href="#conditional-variance-prediction" id="toc-conditional-variance-prediction" class="nav-link" data-scroll-target="#conditional-variance-prediction">Conditional Variance Prediction</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Experiments</li><li class="breadcrumb-item"><a href="./evaluation.html">Theta Sweep</a></li><li class="breadcrumb-item"><a href="./experiment1.html">Experiment 1: Single θ, Constant Seq Len</a></li><li class="breadcrumb-item"><a href="./results.html">Results</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./theta_sweep.html">Experiments</a></li><li class="breadcrumb-item"><a href="./experiment3.html">Train θ vs Test θ Contour</a></li><li class="breadcrumb-item"><a href="./experiment3.html">Train θ vs Test θ Contour</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Results</h1>
+<h1 class="title">Train θ vs Test θ Contour</h1>
 </div>
 
 
@@ -322,22 +266,85 @@ window.Quarto = {
 </header>
 
 
-<section id="conditional-mean-prediction" class="level2">
-<h2 class="anchored" data-anchor-id="conditional-mean-prediction">Conditional Mean Prediction</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/single_theta_constant_len_mean.svg" class="img-fluid figure-img"></p>
-<figcaption>Theta sweep results for conditional mean prediction (coef 0). Relative error across θ and sequence length for trained vs.&nbsp;untrained model.</figcaption>
-</figure>
-</div>
-<hr>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>For each value of training <span class="math inline">\(\theta\)</span>, a fresh model is trained on single-<span class="math inline">\(\theta\)</span> data, then evaluated across a range of test <span class="math inline">\(\theta\)</span> values. The result is a 2D grid of MSE values showing how well a model trained at one <span class="math inline">\(\theta\)</span> generalizes to others.</p>
 </section>
-<section id="conditional-variance-prediction" class="level2">
-<h2 class="anchored" data-anchor-id="conditional-variance-prediction">Conditional Variance Prediction</h2>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Train <span class="math inline">\(\theta\)</span> grid</td>
+<td>12 values, linearly spaced in <span class="math inline">\([0.1, 4.0]\)</span></td>
+</tr>
+<tr class="even">
+<td>Test <span class="math inline">\(\theta\)</span> grid</td>
+<td>30 values, linearly spaced in <span class="math inline">\([0.1, 4.0]\)</span></td>
+</tr>
+<tr class="odd">
+<td>Sequence length</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td>Training trajectories</td>
+<td>1000</td>
+</tr>
+<tr class="odd">
+<td>Test trajectories</td>
+<td>2000</td>
+</tr>
+<tr class="even">
+<td>Train/val split</td>
+<td>80/20</td>
+</tr>
+<tr class="odd">
+<td>Epochs</td>
+<td>150</td>
+</tr>
+<tr class="even">
+<td>Batch size</td>
+<td>64</td>
+</tr>
+<tr class="odd">
+<td>Learning rate</td>
+<td><span class="math inline">\(10^{-3}\)</span></td>
+</tr>
+<tr class="even">
+<td>Optimizer</td>
+<td>Adam</td>
+</tr>
+<tr class="odd">
+<td>Loss</td>
+<td>MSE on conditional mean (coef 0) at last timestep</td>
+</tr>
+<tr class="even">
+<td>Marginal variance</td>
+<td>0.2 (fixed across all trajectories)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\mu\)</span></td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\Delta t\)</span></td>
+<td>0.1</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/single_theta_constant_len_variance.svg" class="img-fluid figure-img"></p>
-<figcaption>Theta sweep results for conditional variance prediction (coef 1). Relative error across θ and sequence length for trained vs.&nbsp;untrained model.</figcaption>
+<p><img src="images/theta-theta-contour.svg" class="img-fluid figure-img"></p>
+<figcaption>MSE (log scale) of conditional mean prediction as a function of training <span class="math inline">\(\theta\)</span> (y-axis) and test <span class="math inline">\(\theta\)</span> (x-axis). The dashed diagonal marks where train <span class="math inline">\(\theta\)</span> equals test <span class="math inline">\(\theta\)</span>.</figcaption>
 </figure>
 </div>
 
