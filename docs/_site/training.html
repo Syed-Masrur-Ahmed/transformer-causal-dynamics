@@ -290,11 +290,11 @@ window.Quarto = {
 
 <section id="objective" class="level2">
 <h2 class="anchored" data-anchor-id="objective">Objective</h2>
-<p>The model is trained with <strong>mean squared error (MSE)</strong> between predictions and ground-truth conditional moments at every timestep and every trajectory:</p>
+<p>The model is trained with <strong>mean squared error (MSE)</strong> between predicted and ground-truth cumulants at every timestep and every trajectory:</p>
 <p><span class="math display">\[
-\mathcal{L} = \frac{1}{N \cdot L \cdot K} \sum_{i=1}^{N} \sum_{t=1}^{L} \sum_{k=1}^{K} \left(\hat{y}^{(k)}_{i,t} - y^{(k)}_{i,t}\right)^2
+\mathcal{L} = \frac{1}{N \cdot L \cdot K} \sum_{i=1}^{N} \sum_{t=1}^{L} \sum_{k=1}^{K} \left(\hat{\kappa}^{(k)}_{i,t} - \kappa^{(k)}_{i,t}\right)^2
 \]</span></p>
-<p>where <span class="math inline">\(\hat{y}^{(k)}_{i,t}\)</span> is the model’s prediction of cumulant <span class="math inline">\(k\)</span> for trajectory <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span>, and <span class="math inline">\(y^{(k)}_{i,t}\)</span> is the ground-truth value.</p>
+<p>where <span class="math inline">\(\hat{\kappa}^{(k)}_{i,t}\)</span> is the model’s prediction of the <span class="math inline">\(k\)</span>-th cumulant for trajectory <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span>, and <span class="math inline">\(\kappa^{(k)}_{i,t}\)</span> is the ground-truth value computed analytically from the process parameters.</p>
 <p>Training on <strong>all timesteps</strong> simultaneously (not just the last) acts as a form of data augmentation and encourages the model to learn useful representations at all context lengths.</p>
 </section>
 <section id="data-loading" class="level2">

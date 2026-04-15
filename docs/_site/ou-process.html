@@ -345,7 +345,7 @@ X_{t+\Delta t} \mid X_t \;\sim\; \mathcal{N}\!\left(\mu_{\text{cond}},\; \sigma^
 <p><span class="math display">\[
 \sigma^2_{\text{cond}} = \frac{D}{\theta}\left(1 - e^{-2\theta \Delta t}\right)
 \]</span></p>
-<p>where <span class="math inline">\(D = \sigma^2/2\)</span> is the diffusion constant. These are the <strong>ground-truth targets</strong> the model is trained to predict.</p>
+<p>where <span class="math inline">\(D = \sigma^2/2\)</span> is the diffusion constant. These are the first two <strong>cumulants</strong> of the one-step-ahead distribution, and serve as the ground-truth targets the model is trained to predict. For the OU process, the conditional distribution is exactly Gaussian, so all cumulants above order 2 are zero — mean and variance fully characterize the next step.</p>
 </section>
 <section id="fixed-marginal-variance-design" class="level2">
 <h2 class="anchored" data-anchor-id="fixed-marginal-variance-design">Fixed Marginal Variance Design</h2>
@@ -407,37 +407,42 @@ X_{t+\Delta t} \mid X_t \;\sim\; \mathcal{N}\!\left(\mu_{\text{cond}},\; \sigma^
 </tr>
 </tbody>
 </table>
-<p>where <span class="math inline">\(N\)</span> = number of trajectories, <span class="math inline">\(L\)</span> = sequence length, <span class="math inline">\(K\)</span> = number of MGF query points (= <code>target.order</code> in <code>data.yaml</code>, default 3).</p>
+<p>where <span class="math inline">\(N\)</span> = number of trajectories, <span class="math inline">\(L\)</span> = sequence length, <span class="math inline">\(K\)</span> = number of cumulants (= <code>target.order</code> in <code>data.yaml</code>).</p>
 <section id="targets" class="level3">
 <h3 class="anchored" data-anchor-id="targets">Targets</h3>
 <p>The target tensor has the following columns:</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 36%">
+<col style="width: 36%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Index</th>
-<th>Content</th>
+<th>Cumulant</th>
 <th>Formula</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><code>0</code></td>
-<td>Conditional mean</td>
+<td><span class="math inline">\(\kappa_1\)</span> — conditional mean</td>
 <td><span class="math inline">\(\mu + (X_t - \mu)\,e^{-\theta \Delta t}\)</span></td>
 </tr>
 <tr class="even">
 <td><code>1</code></td>
-<td>Conditional variance</td>
+<td><span class="math inline">\(\kappa_2\)</span> — conditional variance</td>
 <td><span class="math inline">\((D/\theta)(1 - e^{-2\theta\Delta t})\)</span></td>
 </tr>
 <tr class="odd">
 <td><code>2+</code></td>
-<td>Zero (unused)</td>
-<td>—</td>
+<td><span class="math inline">\(\kappa_3, \kappa_4, \ldots\)</span> — higher cumulants</td>
+<td>Zero for the OU process (Gaussian)</td>
 </tr>
 </tbody>
 </table>
-<p>The model is trained to predict all <code>K</code> outputs simultaneously via MSE.</p>
+<p>For the standard OU process, cumulants above order 2 are always zero, so <code>order: 2</code> is sufficient. The <code>order</code> parameter becomes meaningful for non-Gaussian extensions. The model is trained to predict all <code>K</code> cumulants simultaneously via MSE.</p>
 </section>
 </section>
 <section id="configuration" class="level2">

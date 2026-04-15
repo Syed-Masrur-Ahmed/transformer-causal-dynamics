@@ -4,7 +4,7 @@ project:
 
 website:
   title: "Transformer Causal Dynamics"
-  description: "Training transformers to learn Ornstein–Uhlenbeck process dynamics via moment-generating function prediction"
+  description: "Training transformers to learn Ornstein–Uhlenbeck process dynamics via cumulant prediction"
   sidebar:
     style: "docked"
     search: true

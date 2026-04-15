@@ -35,7 +35,7 @@ $$
 \sigma^2_{\text{cond}} = \frac{D}{\theta}\left(1 - e^{-2\theta \Delta t}\right)
 $$
 
-where $D = \sigma^2/2$ is the diffusion constant. These are the **ground-truth targets** the model is trained to predict.
+where $D = \sigma^2/2$ is the diffusion constant. These are the first two **cumulants** of the one-step-ahead distribution, and serve as the ground-truth targets the model is trained to predict. For the OU process, the conditional distribution is exactly Gaussian, so all cumulants above order 2 are zero — mean and variance fully characterize the next step.
 
 ## Fixed Marginal Variance Design
 
@@ -90,19 +90,19 @@ The `create_mgf_dataset` function (in `src/mgf_dataset.py`) returns:
 | `theta_tensor` | `(N,)` | Per-trajectory $\theta$ values |
 | `targets` | `(N, L, K)` | Prediction targets at each timestep |
 
-where $N$ = number of trajectories, $L$ = sequence length, $K$ = number of MGF query points (= `target.order` in `data.yaml`, default 3).
+where $N$ = number of trajectories, $L$ = sequence length, $K$ = number of cumulants (= `target.order` in `data.yaml`).
 
 ### Targets
 
 The target tensor has the following columns:
 
-| Index | Content | Formula |
+| Index | Cumulant | Formula |
 |-------|---------|---------|
-| `0` | Conditional mean | $\mu + (X_t - \mu)\,e^{-\theta \Delta t}$ |
-| `1` | Conditional variance | $(D/\theta)(1 - e^{-2\theta\Delta t})$ |
-| `2+` | Zero (unused) | — |
+| `0` | $\kappa_1$ — conditional mean | $\mu + (X_t - \mu)\,e^{-\theta \Delta t}$ |
+| `1` | $\kappa_2$ — conditional variance | $(D/\theta)(1 - e^{-2\theta\Delta t})$ |
+| `2+` | $\kappa_3, \kappa_4, \ldots$ — higher cumulants | Zero for the OU process (Gaussian) |
 
-The model is trained to predict all `K` outputs simultaneously via MSE.
+For the standard OU process, cumulants above order 2 are always zero, so `order: 2` is sufficient. The `order` parameter becomes meaningful for non-Gaussian extensions. The model is trained to predict all `K` cumulants simultaneously via MSE.
 
 ## Configuration
 

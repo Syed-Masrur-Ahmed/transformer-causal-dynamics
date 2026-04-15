@@ -7,7 +7,7 @@ subtitle: "Learning OU Process Statistics via MGF Prediction"
 
 This project investigates whether a transformer can learn to predict the **conditional distribution** of an Ornstein–Uhlenbeck (OU) process from a observed trajectory prefix, without being given the process parameters.
 
-The key idea is to train the model to predict the **log moment-generating function (MGF)** of the next-step distribution at multiple query points. Because the log-MGF of a Gaussian is a parabola in the query variable $s$, the model implicitly learns to extract the conditional mean and variance from context.
+The key idea is to train the model to predict the **cumulants** of the one-step-ahead conditional distribution — the conditional mean, variance, and higher-order shape descriptors — given only the observed trajectory prefix, without access to the process parameters.
 
 ## Research Question
 
@@ -15,7 +15,7 @@ The key idea is to train the model to predict the **log moment-generating functi
 
 ## Key Contributions
 
-- **MGF prediction target**: Instead of predicting a single scalar, the model predicts $\phi(s \mid X_{1:t})$ at a small grid of $s$ values, encoding full distributional information.
+- **Cumulant prediction target**: Instead of predicting a single scalar, the model predicts the cumulants $(\kappa_1, \kappa_2, \ldots)$ of the next-step conditional distribution, encoding full distributional information. The number of cumulants is a hyperparameter (`target.order`).
 - **Hermite embedding**: Scalar inputs are lifted to a Hermite polynomial basis — a natural orthogonal basis for Gaussian-distributed inputs — before being fed to the transformer.
 - **Fixed marginal variance**: The dataset is constructed so that $\text{Var}[X_\infty] = D/\theta$ is constant across trajectories, ensuring the only variation the model must track is $\theta$ itself.
 - **Predictive testing**: The trained model is evaluated over a grid of $(\theta, L)$ values with bias–variance decomposition of the relative prediction error.

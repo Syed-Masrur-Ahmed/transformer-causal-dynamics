@@ -291,7 +291,7 @@ window.Quarto = {
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <p>This project investigates whether a transformer can learn to predict the <strong>conditional distribution</strong> of an Ornstein–Uhlenbeck (OU) process from a observed trajectory prefix, without being given the process parameters.</p>
-<p>The key idea is to train the model to predict the <strong>log moment-generating function (MGF)</strong> of the next-step distribution at multiple query points. Because the log-MGF of a Gaussian is a parabola in the query variable <span class="math inline">\(s\)</span>, the model implicitly learns to extract the conditional mean and variance from context.</p>
+<p>The key idea is to train the model to predict the <strong>cumulants</strong> of the one-step-ahead conditional distribution — the conditional mean, variance, and higher-order shape descriptors — given only the observed trajectory prefix, without access to the process parameters.</p>
 </section>
 <section id="research-question" class="level2">
 <h2 class="anchored" data-anchor-id="research-question">Research Question</h2>
@@ -302,7 +302,7 @@ window.Quarto = {
 <section id="key-contributions" class="level2">
 <h2 class="anchored" data-anchor-id="key-contributions">Key Contributions</h2>
 <ul>
-<li><strong>MGF prediction target</strong>: Instead of predicting a single scalar, the model predicts <span class="math inline">\(\phi(s \mid X_{1:t})\)</span> at a small grid of <span class="math inline">\(s\)</span> values, encoding full distributional information.</li>
+<li><strong>Cumulant prediction target</strong>: Instead of predicting a single scalar, the model predicts the cumulants <span class="math inline">\((\kappa_1, \kappa_2, \ldots)\)</span> of the next-step conditional distribution, encoding full distributional information. The number of cumulants is a hyperparameter (<code>target.order</code>).</li>
 <li><strong>Hermite embedding</strong>: Scalar inputs are lifted to a Hermite polynomial basis — a natural orthogonal basis for Gaussian-distributed inputs — before being fed to the transformer.</li>
 <li><strong>Fixed marginal variance</strong>: The dataset is constructed so that <span class="math inline">\(\text{Var}[X_\infty] = D/\theta\)</span> is constant across trajectories, ensuring the only variation the model must track is <span class="math inline">\(\theta\)</span> itself.</li>
 <li><strong>Predictive testing</strong>: The trained model is evaluated over a grid of <span class="math inline">\((\theta, L)\)</span> values with bias–variance decomposition of the relative prediction error.</li>
