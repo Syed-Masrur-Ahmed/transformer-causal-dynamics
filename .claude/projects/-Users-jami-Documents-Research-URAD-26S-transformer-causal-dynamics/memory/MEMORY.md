@@ -1,0 +1,2 @@
+- [Report conciseness](feedback_report_style.md) — Skip basics in writeups; professor is domain-expert
+- [Test config inheritance](feedback_test_config.md) — Don't duplicate physics params in test.yaml; fall back to data.yaml

@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.mgf_dataset import simulate_ou_process
+from src.mgf_dataset import simulate_ou_process, simulate_binary_ou_process, compute_mixture_cumulants
 from src.model import SimpleTransformer
 from src.utils import apply_experiment_id_to_paths, deep_update, load_full_config
 
@@ -35,15 +35,19 @@ def load_test_config() -> Dict:
 
 
 def load_trained_model(cfg: Dict, device: torch.device) -> SimpleTransformer:
-    """Load trained model checkpoint."""
-    model = SimpleTransformer(**cfg["architecture"]).to(device)
-
+    """Load trained model checkpoint and sync architecture config."""
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     save_dir = cfg.get("paths", {}).get("save_dir", "experiments")
     model_name = cfg.get("paths", {}).get("mgf_model_name", "model_mgf.pth")
     model_path = os.path.join(project_root, save_dir, model_name)
 
     checkpoint = torch.load(model_path, map_location=device, weights_only=False)
+
+    # Use architecture from checkpoint if available (has inferred d_input/d_output)
+    arch = checkpoint.get("config", {}).get("architecture", cfg["architecture"])
+    cfg["architecture"] = arch
+
+    model = SimpleTransformer(**arch).to(device)
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
     return model
@@ -84,6 +88,48 @@ def compute_truth_all_coefficients(
 
     # Coefficient 2: Zero
     truth[:, 2] = 0.0
+
+    return truth
+
+
+def compute_truth_binary_observed(
+    trajectories: torch.Tensor,
+    states: torch.Tensor,
+    theta_tensor: torch.Tensor,
+    mu: float,
+    dt: float,
+    kappa: float,
+    D_tensor: torch.Tensor,
+    order: int,
+) -> torch.Tensor:
+    """
+    Compute ground truth cumulants at final step for binary OU with observed mu.
+
+    Returns:
+        truth: (num_trajectories, order) tensor
+    """
+    import numpy as np
+
+    theta_expanded = theta_tensor.unsqueeze(1)
+    D_expanded = D_tensor.unsqueeze(1)
+    c = torch.exp(-theta_expanded * dt)
+    r = 1 - c
+    sigma2 = (D_expanded / theta_expanded) * (1 - torch.exp(-2 * theta_expanded * dt))
+    delta = mu * r
+
+    b = 2 * np.exp(-kappa * dt) - 1
+    # Use only the final time step state
+    p_plus = (1 + b * states[:, -1]) / 2  # (num_traj,)
+
+    cumulant_list = compute_mixture_cumulants(
+        p_plus, delta.squeeze(1), sigma2.squeeze(1), order
+    )
+
+    truth = torch.zeros(trajectories.shape[0], order, dtype=torch.float32)
+    x_t = trajectories[:, -1, 0]
+    truth[:, 0] = x_t * c.squeeze(1) + cumulant_list[0]
+    for k in range(1, order):
+        truth[:, k] = cumulant_list[k]
 
     return truth
 
@@ -211,38 +257,62 @@ def run_predictive_tests(cfg: Dict, coefficient_idx: int = 0) -> None:
     print(f"Total test conditions: {total_jobs} (sequence_length, theta) combinations\n")
     progress = tqdm(total=total_jobs, desc=f"Testing coef_{coefficient_idx}")
 
+    mode = cfg.get("mode", "standard_ou")
+
     with torch.no_grad():
         for sweep, sequence_lengths, theta_grid in sweep_jobs:
             num_replicates = int(sweep["num_replicates"])
-            mu = float(sweep["mu"])
-            dt = float(sweep["dt"])
-            fixed_marginal_variance = float(sweep["fixed_marginal_variance"])
+            physics = cfg.get("physics", {})
+            mu = float(sweep.get("mu", physics.get("mu", 0.0)))
+            dt = float(sweep.get("dt", physics.get("dt", 0.1)))
+            fixed_marginal_variance = float(sweep.get("fixed_marginal_variance", physics.get("marginal_variance", 0.1)))
+            kappa = float(physics.get("kappa", 0.5))
+            order = int(cfg.get("target", {}).get("order", 2))
 
             for seq_len in sequence_lengths:
                 for theta in theta_grid:
                     theta_tensor = torch.full((num_replicates,), float(theta), dtype=torch.float32)
                     d_tensor = fixed_marginal_variance * theta_tensor
 
-                    trajectories = simulate_ou_process(
-                        num_trajectories=num_replicates,
-                        sequence_length=seq_len,
-                        theta_tensor=theta_tensor,
-                        mu=mu,
-                        D_tensor=d_tensor,
-                        dt=dt,
-                    )
+                    if mode == "binary_ou_observed":
+                        trajectories, states = simulate_binary_ou_process(
+                            num_trajectories=num_replicates,
+                            sequence_length=seq_len,
+                            theta_tensor=theta_tensor,
+                            mu=mu,
+                            D_tensor=d_tensor,
+                            dt=dt,
+                            kappa=kappa,
+                        )
+                        # Build 2-channel input
+                        mu_t = (states * mu).unsqueeze(-1)
+                        traj_input = torch.cat([trajectories, mu_t], dim=-1)
 
-                    traj_device = trajectories.to(device)
+                        truth_all = compute_truth_binary_observed(
+                            trajectories, states, theta_tensor, mu, dt, kappa, d_tensor, order
+                        )
+                        truth = truth_all[:, coefficient_idx]
+                    else:
+                        trajectories = simulate_ou_process(
+                            num_trajectories=num_replicates,
+                            sequence_length=seq_len,
+                            theta_tensor=theta_tensor,
+                            mu=mu,
+                            D_tensor=d_tensor,
+                            dt=dt,
+                        )
+                        traj_input = trajectories
+
+                        truth_all = compute_truth_all_coefficients(
+                            trajectories, theta_tensor, mu, dt, d_tensor
+                        )
+                        truth = truth_all[:, coefficient_idx]
+
+                    traj_device = traj_input.to(device)
 
                     # Get predictions for selected coefficient
                     trained_preds = trained_model(traj_device)[0][:, -1, coefficient_idx].detach().cpu()
                     untrained_preds = untrained_model(traj_device)[0][:, -1, coefficient_idx].detach().cpu()
-
-                    # Compute ground truth for all coefficients
-                    truth_all = compute_truth_all_coefficients(
-                        trajectories, theta_tensor, mu, dt, d_tensor
-                    )
-                    truth = truth_all[:, coefficient_idx]
 
                     trained_metrics = compute_relative_error_decomposition(trained_preds, truth)
                     untrained_metrics = compute_relative_error_decomposition(untrained_preds, truth)

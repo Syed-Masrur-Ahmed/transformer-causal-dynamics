@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Research project studying whether transformers can learn causal dynamics from Ornstein-Uhlenbeck (OU) stochastic processes. A transformer is trained to predict conditional moments (mean, variance) of the next step given a trajectory, effectively learning the moment-generating function (MGF) coefficients.
+Research project studying whether transformers can learn causal dynamics from Ornstein-Uhlenbeck (OU) stochastic processes. A transformer is trained to predict the cumulants (mean, variance, and higher-order terms) of the one-step-ahead conditional distribution given a trajectory prefix, without access to the process parameters.
 
 ## Tech Stack
 
@@ -63,7 +63,8 @@ source venv/bin/activate
 - OU process: `dX = -theta(X - mu)dt + sqrt(2D)dW`
 - Theta can be fixed or sampled from a lognormal distribution (controlled by `theta_sampling` in data.yaml)
 - Marginal variance is held constant across trajectories; D is derived as `D = marginal_variance * theta`
-- Targets: conditional mean `mu + (X_t - mu)*exp(-theta*dt)` and conditional variance `(D/theta)*(1 - exp(-2*theta*dt))`
+- Two modes: `standard_ou` (single-channel X_t input) and `binary_ou_observed` (two-channel (X_t, mu_t) input with switching mean)
+- Targets: cumulants of the one-step-ahead conditional distribution (mean, variance, and optionally higher orders)
 
 ## Config System
 

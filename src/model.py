@@ -23,21 +23,12 @@ class HermiteEmbedding(nn.Module):
         else:
             self.norm = None
 
-    def forward(self, x):
+    def _hermite_1d(self, x):
         """
-        x: Tensor of shape (batch, seq_len, 1) or (batch, seq_len)
-           entries should be scalar Gaussian inputs.
-        Returns:
-            feats: (batch, seq_len, L+1) with Hermite features
+        Compute Hermite features for a single scalar channel.
+        x: (batch, seq_len)
+        Returns: (batch, seq_len, L+1)
         """
-        if x.dim() == 3 and x.size(-1) == 1:
-            x = x.squeeze(-1)   # (batch, seq_len)
-        elif x.dim() != 2:
-            raise ValueError("x should have shape (batch, seq_len) or (batch, seq_len, 1)")
-
-        batch_size, seq_len = x.shape
-
-        # H_0 and H_1
         H_list = []
         H0 = torch.ones_like(x)
         H_list.append(H0)
@@ -47,19 +38,30 @@ class HermiteEmbedding(nn.Module):
             H_list.append(H1)
             Hm2, Hm1 = H0, H1
 
-            # Recurrence for H_n up to n = L
             for n in range(1, self.L):
-                Hn1 = x * Hm1 - n * Hm2   # H_{n+1}(x) = x H_n(x) - n H_{n-1}(x)
+                Hn1 = x * Hm1 - n * Hm2
                 H_list.append(Hn1)
                 Hm2, Hm1 = Hm1, Hn1
 
-        # Stack along feature dimension
         feats = torch.stack(H_list, dim=-1)   # (batch, seq_len, L+1)
 
         if self.normalize:
-            feats = feats / self.norm.view(1, 1, -1)  # broadcast sqrt(n!) over batch, seq_len
+            feats = feats / self.norm.view(1, 1, -1)
 
         return feats
+
+    def forward(self, x):
+        """
+        x: Tensor of shape (batch, seq_len), (batch, seq_len, 1), or (batch, seq_len, d_input).
+        Returns:
+            feats: (batch, seq_len, d_input * (L+1)) with Hermite features per channel
+        """
+        if x.dim() == 2:
+            x = x.unsqueeze(-1)   # (batch, seq_len, 1)
+
+        # Apply Hermite independently to each input channel
+        channels = [self._hermite_1d(x[..., i]) for i in range(x.size(-1))]
+        return torch.cat(channels, dim=-1)  # (batch, seq_len, d_input * (L+1))
     
 
 class SimpleTransformer(nn.Module):
@@ -71,9 +73,10 @@ class SimpleTransformer(nn.Module):
             dim_feedforward = 4 * d_model
 
 
-        self.hermite = HermiteEmbedding(L= d_model-1, normalize=True)
+        self.d_input = d_input
+        self.hermite = HermiteEmbedding(L=d_model-1, normalize=True)
 
-        self.input_projection = nn.Linear( d_model, d_model)
+        self.input_projection = nn.Linear(d_input * d_model, d_model)
         self.pos_encoder = PositionalEncoding(d_model)
 
         self.layers = nn.ModuleList([
@@ -93,11 +96,8 @@ class SimpleTransformer(nn.Module):
 
     def forward(self, src):
         """
-        src:
-            if self.hermite is None:
-                shape (batch, seq_len, d_input)
-            else:
-                shape (batch, seq_len, 1) with scalar Gaussian inputs
+        src: shape (batch, seq_len, d_input)
+             Hermite embedding is applied independently to each input channel.
         """
         if self.hermite is not None:
             src = self.hermite(src)   # (batch, seq_len, L+1)

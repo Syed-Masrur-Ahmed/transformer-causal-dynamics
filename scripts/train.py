@@ -34,9 +34,19 @@ def train_mgf_prediction(cfg, variable_seq_len=False, min_seq_len=2):
     print(f"Loading data from {mgf_data_path}...")
     data = torch.load(mgf_data_path, weights_only=False)
 
-    trajectories = data['trajectories']  # (N, seq_len, 1)
+    trajectories = data['trajectories']  # (N, seq_len, d_input)
     targets = data['targets']  # (N, seq_len, order)
     full_seq_len = trajectories.shape[1]
+
+    # Infer d_input and d_output from data, overriding config
+    d_input = trajectories.shape[2] if trajectories.dim() == 3 else 1
+    d_output = targets.shape[2] if targets.dim() == 3 else 1
+    if d_input != cfg['architecture'].get('d_input'):
+        print(f"Overriding d_input: config={cfg['architecture'].get('d_input')} -> data={d_input}")
+        cfg['architecture']['d_input'] = d_input
+    if d_output != cfg['architecture'].get('d_output'):
+        print(f"Overriding d_output: config={cfg['architecture'].get('d_output')} -> data={d_output}")
+        cfg['architecture']['d_output'] = d_output
 
     if variable_seq_len and min_seq_len < 1:
         raise ValueError("min_seq_len must be at least 1 when variable sequence length is enabled.")

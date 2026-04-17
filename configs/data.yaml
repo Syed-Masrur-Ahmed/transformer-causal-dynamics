@@ -1,6 +1,8 @@
+mode: "binary_ou_observed"  # Options: standard_ou, binary_ou_observed
+
 physics:
   theta: 0.15
-  mu: 0.0
+  mu: 5
   sigma: 0.2
   dt: 0.1
   marginal_variance: 0.2  # marginal variance for all trajectories
@@ -9,7 +11,7 @@ physics:
 theta_sampling:
   distribution: "lognormal"
   mean: 0.0  # Mean of underlying normal: log(θ) ~ N(0, 0.5)
-  sigma: 0.0  # Std of underlying normal
+  sigma: 0.5  # Std of underlying normal
 
 structure:
   num_trajectories: 1000 
@@ -17,7 +19,7 @@ structure:
 
 
 target:
-  order: 3  # Number of s values in the grid
+  order: 2  # Number of cumulants to predict (2 = mean + variance; sufficient for Gaussian OU)
 
 training:
   train_split: 0.8
